@@ -1,27 +1,15 @@
-"use client"; // Context Providers must be Client Components
+"use client";
 
-import React, { createContext, useState, ReactNode } from "react";
-// We'll assume you moved your assets to a 'lib' or 'assets' folder as discussed
-import { products } from "@/public/assets/assets"; 
-import { StaticImageData } from "next/image";
+import React, { createContext, useState, ReactNode, useEffect } from "react";
+import { products, Product } from "@/lib/assets";
 
-// 1. Define the Shape of a Product (Types!)
-// This is the "MERN stack developer" part: defining your data schema.
-export interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: StaticImageData[]; // Next.js images are objects, not just strings
-  category: string;
-  subCategory: string;
-  sizes: string[];
-  date: number;
-  bestseller: boolean;
-}
+// Type for the cart state: { "itemId": quantity }
+export type CartItems = {
+  [key: string]: number;
+};
 
-// 2. Define the Shape of the Context
-interface ShopContextType {
+// Type for the context value
+export interface ShopContextType {
   products: Product[];
   currency: string;
   delivery_fee: number;
@@ -29,16 +17,74 @@ interface ShopContextType {
   setSearch: (search: string) => void;
   showSearch: boolean;
   setShowSearch: (show: boolean) => void;
+  cartItems: CartItems;
+  addToCart: (itemId: string) => void;
+  removeFromCart: (itemId: string) => void;
+  getCartTotalAmount: () => number;
+  getCartTotalItems: () => number;
 }
 
-// 3. Create the Context with a default value (usually null or dummy data)
 export const ShopContext = createContext<ShopContextType | null>(null);
 
 export const ShopContextProvider = (props: { children: ReactNode }) => {
+  const [cartItems, setCartItems] = useState<CartItems>({});
+  const [search, setSearch] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
   const currency = "PKR";
   const delivery_fee = 100;
-  const [search, setSearch] = useState<string>("");
-  const [showSearch, setShowSearch] = useState<boolean>(false);
+
+  // Load cart from localStorage on component mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cartItems");
+    if (savedCart) {
+      setCartItems(JSON.parse(savedCart));
+    }
+  }, []);
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    if (Object.keys(cartItems).length > 0) {
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    }
+  }, [cartItems]);
+
+  const addToCart = (itemId: string) => {
+    setCartItems((prev) => ({
+      ...prev,
+      [itemId]: (prev[itemId] || 0) + 1,
+    }));
+  };
+
+  const removeFromCart = (itemId: string) => {
+    setCartItems((prev) => {
+      const newCart = { ...prev };
+      if (newCart[itemId] > 1) {
+        newCart[itemId] -= 1;
+      } else {
+        delete newCart[itemId];
+      }
+      return newCart;
+    });
+  };
+
+  const getCartTotalAmount = () => {
+    let totalAmount = 0;
+    for (const itemId in cartItems) {
+      const product = products.find((p) => p._id === itemId);
+      if (product) {
+        totalAmount += product.price * cartItems[itemId];
+      }
+    }
+    return totalAmount;
+  };
+
+  const getCartTotalItems = () => {
+    let totalItems = 0;
+    for (const itemId in cartItems) {
+      totalItems += cartItems[itemId];
+    }
+    return totalItems;
+  };
 
   const value: ShopContextType = {
     products,
@@ -48,12 +94,15 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
     setSearch,
     showSearch,
     setShowSearch,
+    cartItems,
+    addToCart,
+    removeFromCart,
+    getCartTotalAmount,
+    getCartTotalItems,
   };
 
   return (
-    <ShopContext.Provider value={value}>
-      {props.children}
-    </ShopContext.Provider>
+    <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>
   );
 };
 

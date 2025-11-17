@@ -1,5 +1,5 @@
 import React from 'react';
-import { assets } from "@/public/assets/assets";
+import { assets } from  "@/lib/assets";
 import Image from "next/image";
 
 const OurPolicy: React.FC = () => {

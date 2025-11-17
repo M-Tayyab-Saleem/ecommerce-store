@@ -1,5 +1,5 @@
 import React from "react";
-import { assets } from "@/public/assets/assets";
+import { assets } from  "@/lib/assets";
 import Image from "next/image";
 
 const Footer = () => {
@@ -7,7 +7,7 @@ const Footer = () => {
     <div>
       <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 my-10 mt-40 text-sm">
         <div>
-          <Image src={assets.logo1} alt="" className="mb-5 w-32"></Image>
+          <Image src={assets.logo1} alt="" className="mb-5 w-32"  width={144} height={40} ></Image>
           <p className="w-full md:w-2/3 text-gray-600">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero
             ipsam consequuntur officia perferendis quidem iste quod cupiditate

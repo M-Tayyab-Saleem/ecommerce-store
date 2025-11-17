@@ -8,14 +8,14 @@ import { StaticImageData } from 'next/image'
 
 // 1. Import your product data directly
 // This code runs ON THE SERVER!
-import { products } from '@/public/assets/assets' // Assuming you moved assets.js here
+import { products } from  "@/lib/assets" // Assuming you moved assets.js here
 
 type Product = {
   _id: string;
   name: string;
   description: string;
   price: number;
-  image: StaticImageData[];
+  image: string[];
   category: string;
   subCategory: string;
   sizes: string[];

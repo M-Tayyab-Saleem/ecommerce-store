@@ -10,7 +10,7 @@ type Product = {
   name: string;
   description: string;
   price: number;
-  image: StaticImageData[];
+  image: string[];
   category: string;
   subCategory: string;
   sizes: string[];

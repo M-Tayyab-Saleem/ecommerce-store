@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import { ShopContext } from '@/context/ShopContext';
 import Link from "next/link"; // IMPORTANT: Import from next/link
-import Image, { StaticImageData } from "next/image"; // We'll also upgrade the <img> tag
+import Image from "next/image"; // We'll also upgrade the <img> tag
 
 // 1. Define the types for your component's props
 interface ProductItemProps {
   id: string;
-  image: StaticImageData[]; // Based on your assets.js, 'image' is an array of StaticImageData
+  image: string[]; // Based on your assets.js, 'image' is an array of string paths
   name: string;
   price: number;
 }
