@@ -1,122 +1,97 @@
-"use client";
+import React from 'react';
+import Image from 'next/image';
+import { assets } from '@/lib/assets';
+import Title from '@/components/Title';
+import Link from 'next/link';
 
-import React, { useContext } from "react";
-import { ShopContext, ShopContextType } from "@/context/ShopContext";
-import Image from "next/image";
-import { assets } from "@/lib/assets";
+const Orders = async () => {
 
-const OrderPlace = () => {
-  const { getCartTotalAmount, currency, delivery_fee } = useContext(
-    ShopContext
-  ) as ShopContextType;
-
-  const totalAmount = getCartTotalAmount();
+  // Mock data for display.
+  const mockOrders = [
+    {
+      _id: "ORD98765",
+      items: [
+        { name: "Women Round Neck Top", image: "/p_img1.png", quantity: 1, price: 100 },
+        { name: "Men Cotton T-shirt", image: "/p_img2_1.png", quantity: 2, price: 200 },
+      ],
+      amount: 500,
+      status: "Delivered",
+      date: "Oct 15, 2025"
+    },
+    {
+      _id: "ORD98766",
+      items: [
+        { name: "Men Tapered Trousers", image: "/p_img7.png", quantity: 1, price: 190 },
+      ],
+      amount: 190,
+      status: "Processing",
+      date: "Nov 19, 2025"
+    }
+  ];
 
   return (
-    <div className="py-10 border-t">
-      <form className="flex flex-col md:flex-row justify-between gap-10">
-        {/* Left Side - Delivery Info */}
-        <div className="flex-1 w-full max-w-lg">
-          <h2 className="text-3xl font-semibold mb-6">Delivery Information</h2>
-          <div className="flex gap-4">
-            <input
-              type="text"
-              placeholder="First Name"
-              className="w-1/2 border border-gray-300 p-2 rounded outline-none mb-4"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Last Name"
-              className="w-1/2 border border-gray-300 p-2 rounded outline-none mb-4"
-              required
-            />
-          </div>
-          <input
-            type="email"
-            placeholder="Email address"
-            className="w-full border border-gray-300 p-2 rounded outline-none mb-4"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Street"
-            className="w-full border border-gray-300 p-2 rounded outline-none mb-4"
-            required
-          />
-          <div className="flex gap-4">
-            <input
-              type="text"
-              placeholder="City"
-              className="w-1/2 border border-gray-300 p-2 rounded outline-none mb-4"
-              required
-            />
-            <input
-              type="text"
-              placeholder="State"
-              className="w-1/2 border border-gray-300 p-2 rounded outline-none mb-4"
-              required
-            />
-          </div>
-          <div className="flex gap-4">
-            <input
-              type="text"
-              placeholder="Zip code"
-              className="w-1/2 border border-gray-300 p-2 rounded outline-none mb-4"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Phone"
-              className="w-1/2 border border-gray-300 p-2 rounded outline-none mb-4"
-              required
-            />
-          </div>
-        </div>
-
-        {/* Right Side - Cart Totals & Payment */}
-        <div className="flex-1 w-full max-w-lg">
-          <div className="flex-1">
-            <h2 className="text-3xl font-semibold">Cart Totals</h2>
-            <div className="flex justify-between my-3 text-gray-600">
-              <p>Subtotal</p>
-              <p>{currency} {totalAmount}</p>
-            </div>
-            <hr />
-            <div className="flex justify-between my-3 text-gray-600">
-              <p>Delivery Fee</p>
-              <p>{currency} {delivery_fee}</p>
-            </div>
-            <hr />
-            <div className="flex justify-between my-3 text-black font-semibold">
-              <p>Total</p>
-              <p>{currency} {totalAmount + delivery_fee}</p>
-            </div>
-            
-            <h2 className="text-2xl font-semibold mt-8 mb-4">Payment Method</h2>
-            <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3 p-3 border border-gray-300 rounded">
-                    <input type="radio" name="payment" id="stripe" className="w-4 h-4" />
-                    <label htmlFor="stripe">
-                        <Image src={assets.stripe_logo} alt="Stripe" width={100} height={20} />
-                    </label>
+    <div className="py-10 border-t border-gray-100 min-h-[70vh]">
+      
+      {/* Header */}
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-heading font-bold text-gray-900">
+          My Orders
+        </h1>
+        <p className="text-xs text-gray-500 mt-1">
+          <Link href="/" className="hover:text-black">Home</Link> / Orders
+        </p>
+      </div>
+      
+      <div className="flex flex-col gap-6 max-w-4xl mx-auto">
+        {mockOrders.length === 0 ? (
+          <p className="text-center text-xl text-gray-600">You have no past orders.</p>
+        ) : (
+          mockOrders.map((order) => (
+            <div key={order._id} className="border border-gray-200 p-6 rounded-lg shadow-sm bg-white">
+              <div className="flex justify-between items-center pb-4 border-b border-gray-100">
+                <p className="font-semibold text-lg">Order ID: {order._id}</p>
+                <div className="flex items-center gap-3">
+                    <p className={`text-sm font-bold px-3 py-1 rounded-full ${order.status === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-orange-500'}`}>
+                        {order.status}
+                    </p>
+                    <button className="bg-black text-white text-xs px-4 py-2 rounded font-semibold hover:bg-[#ff5e5e] transition">
+                        Track Order
+                    </button>
                 </div>
-                <div className="flex items-center gap-3 p-3 border border-gray-300 rounded">
-                    <input type="radio" name="payment" id="razorpay" className="w-4 h-4" />
-                    <label htmlFor="razorpay">
-                        <Image src={assets.razorpay_logo} alt="Razorpay" width={100} height={20} />
-                    </label>
-                </div>
-            </div>
+              </div>
 
-            <button type="submit" className="bg-black text-white px-6 py-3 text-sm active:bg-gray-700 mt-6 w-full">
-              PROCEED TO PAYMENT
-            </button>
-          </div>
-        </div>
-      </form>
+              <div className="flex justify-between pt-4">
+                <div className="flex flex-col">
+                    <p className="text-sm font-semibold text-gray-700">Order Date</p>
+                    <p className="text-sm text-gray-500">{order.date}</p>
+                </div>
+                <div className="flex flex-col">
+                    <p className="text-sm font-semibold text-gray-700">Total Amount</p>
+                    <p className="text-lg font-bold text-black">${order.amount}.00</p>
+                </div>
+              </div>
+              
+              <div className="flex gap-3 overflow-x-auto pt-4 border-t border-gray-100 mt-4">
+                {order.items.map((item, index) => (
+                    <div key={index} className="flex flex-col items-center text-center">
+                        <Image 
+                            src={item.image} 
+                            alt={item.name} 
+                            width={80} 
+                            height={100} 
+                            className="w-16 h-20 object-cover border border-gray-200" 
+                        />
+                        <p className="text-xs text-gray-600 mt-1 max-w-[80px] truncate">{item.name}</p>
+                        <p className="text-xs font-semibold">x{item.quantity}</p>
+                    </div>
+                ))}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };
 
-export default OrderPlace;
+export default Orders;

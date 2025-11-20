@@ -4,25 +4,42 @@ import Image from "next/image";
 
 const OurPolicy: React.FC = () => {
   return (
-    <div className='flex flex-col sm:flex-row justify-around gap-12 sm:gap-2 text-center py-20 text-xs md:text-base text-gray-700'>
-        <div>
-            <Image src={assets.exchange_icon} alt="Exchange icon" className='w-12 m-auto mb-5' width={48} height={48} />
-            <p className='font-semibold'>Easy Exchange Policy</p>
-            <p className='text-gray-400'>We offer hassle free exchange Policy</p>
+    <div className='flex flex-col sm:flex-row justify-around gap-12 sm:gap-4 text-center py-16 bg-gray-50 rounded-xl'>
+        <div className="w-full sm:w-1/3 p-4">
+            <Image 
+                src={assets.exchange_icon} 
+                alt="Exchange icon" 
+                className='w-10 h-10 m-auto mb-3 opacity-80' 
+                width={40} 
+                height={40} 
+            />
+            <p className='font-heading text-lg font-semibold text-black mb-1'>Easy Exchange Policy</p>
+            <p className='text-sm text-gray-600'>We offer hassle-free exchange within 7 days.</p>
         </div>
-        <div>
-            <Image src={assets.quality_icon} alt="Quality icon" className='w-12 m-auto mb-5' width={48} height={48} />
-            <p className='font-semibold'>7 Days Return Policy</p>
-            <p className='text-gray-400'>We offer 7 days free return Policy</p>
+        <div className="w-full sm:w-1/3 p-4 border-t sm:border-t-0 sm:border-x border-gray-200">
+            <Image 
+                src={assets.quality_icon} 
+                alt="Return icon" 
+                className='w-10 h-10 m-auto mb-3 opacity-80' 
+                width={40} 
+                height={40} 
+            />
+            <p className='font-heading text-lg font-semibold text-black mb-1'>7 Days Return Policy</p>
+            <p className='text-sm text-gray-600'>Shop confidently with our free return period.</p>
         </div>
-        <div>
-            <Image src={assets.support_img} alt="Support icon" className='w-12 m-auto mb-5' width={48} height={48} />
-            <p className='font-semibold'>Best customer support</p>
-            <p className='text-gray-400'>we provide 24/7 customer support</p>
+        <div className="w-full sm:w-1/3 p-4">
+            <Image 
+                src={assets.support_img} 
+                alt="Support icon" 
+                className='w-10 h-10 m-auto mb-3 opacity-80' 
+                width={40} 
+                height={40} 
+            />
+            <p className='font-heading text-lg font-semibold text-black mb-1'>Best Customer Support</p>
+            <p className='text-sm text-gray-600'>Dedicated 24/7 assistance for all your needs.</p>
         </div>
     </div>
   );
 };
 
 export default OurPolicy;
-

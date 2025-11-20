@@ -1,9 +1,6 @@
-'use client'
-
-import { products } from '@/lib/assets'; 
-import { Product } from '@/lib/assets'; // Import the type we defined
-import ProductDetails from '@/components/ProductDetails'; // Our new Client Component
-import RelatedProducts from '@/components/RelatedProducts'; // We'll make this too
+import { products, Product } from '@/lib/assets'; 
+import ProductDetails from '@/components/ProductDetails';
+import RelatedProducts from '@/components/RelatedProducts';
 
 // This interface tells TS what to expect for params
 interface ProductPageParams {
@@ -13,31 +10,25 @@ interface ProductPageParams {
   }
   
 
-// 1. This is a Server Component, so we can make it async
+// This is a Server Component, running without 'use client'
 export default async function ProductPage({ params }: ProductPageParams) {
-  const { productId } = await params;
-   console.log(productId);
+  const { productId } = params;
 
-  // 2. Fetch data ON THE SERVER
-  // We find the product from our data file
+  // Fetch data ON THE SERVER
   const productData = products.find(
     (item) => item._id === productId
   ) as Product | undefined;
 
   if (!productData) {
-    // You can customize this later with a proper 404 page
-    return <div>Product not found</div>;
+    return <div className='py-20 text-center text-2xl font-heading'>Product not found</div>;
   }
 
-  // 3. We pass the server-fetched data as props
-  //    to our Client Component, which handles interaction.
+  // Pass server-fetched data to the Client Component
   return (
     <div>
       <ProductDetails productData={productData} />
       
-      {/* This is a great place for another Server Component!
-        It fetches its own data on the server.
-      */}
+      {/* Related Products is a separate Server Component */}
       <RelatedProducts 
         category={productData.category} 
         subCategory={productData.subCategory} 

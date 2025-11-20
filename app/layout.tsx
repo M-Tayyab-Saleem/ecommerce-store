@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css"; // Next.js uses a global CSS file
-
-// 1. Import your components and provider
+import { Outfit, Prata } from "next/font/google";
+import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ShopContextProvider from "@/context/ShopContext"; 
 
-const inter = Inter({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"], variable: '--font-outfit' });
+const prata = Prata({ weight: "400", subsets: ["latin"], variable: '--font-prata' });
 
 export const metadata: Metadata = {
   title: "EpoxySista", 
@@ -21,11 +20,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${outfit.variable} ${prata.variable} font-sans antialiased`}>
         <ShopContextProvider>
-          <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
+          <div className="flex flex-col min-h-screen">
             <Navbar />
-            {children}
+            <main className="flex-grow">
+              {children}
+            </main>
             <Footer />
           </div>
         </ShopContextProvider>

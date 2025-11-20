@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import Title from "./Title";
 import ProductItem from './ProductItem';
-import { StaticImageData } from 'next/image';
 
 type Product = {
   _id: string;
@@ -26,21 +25,21 @@ const BestSeller: React.FC<BestSellerProps> = ({ products }) => {
   const [bestSeller, setBestSeller] = useState<Product[]>([]);
 
   useEffect(() => {
+    // Show 4 best sellers
     const bestProduct = products.filter((item) => item.bestseller);
-    setBestSeller(bestProduct.slice(0, 5));
+    setBestSeller(bestProduct.slice(0, 4)); 
   }, [products]);
 
   return (
-    <div className="my-10">
-      <div className="text-center text-3xl py-8">
-        <Title text1={"BEST"} text2={"SELLERS"} />
-        <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum
-          obcaecati nihil quos dolores quo consequuntur!
+    <div className="my-16">
+      <div className="text-center">
+        <Title text1={"TOP PICKS"} text2={"BEST SELLERS"} />
+        <p className="w-full m-auto text-sm text-gray-600 max-w-xl">
+          The pieces everyone is loving right now. Shop the items selling fast!
         </p>
       </div>
-      {/* Rendering BEST SELLERS */}
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
+      {/* Rendering BEST SELLERS (4 columns desktop) */}
+      <div className='grid grid-cols-2 md:grid-cols-4 gap-6 mt-10'>
         {
             bestSeller.map((item: Product) => (
                 <ProductItem key={item._id} id={item._id} image={item.image} price={item.price} name={item.name} />
@@ -52,4 +51,3 @@ const BestSeller: React.FC<BestSellerProps> = ({ products }) => {
 };
 
 export default BestSeller;
-

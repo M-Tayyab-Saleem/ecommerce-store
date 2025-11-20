@@ -47,12 +47,14 @@ export default async function Home() {
   return (
     <div>
       <Hero />
-      {/* 5. Pass the data down as props! */}
-      {/* No more useContext for this data */}
-      <LatestCollection products={latestProducts} />
-      <BestSeller products={bestSellerProducts} />
-      <OurPolicy />
-      <NewsletterBox />
+      <div className="container-custom space-y-24 mt-20">
+        {/* 5. Pass the data down as props! */}
+        {/* No more useContext for this data */}
+        <LatestCollection products={latestProducts} />
+        <BestSeller products={bestSellerProducts} />
+        <OurPolicy />
+        <NewsletterBox />
+      </div>
     </div>
   )
 }

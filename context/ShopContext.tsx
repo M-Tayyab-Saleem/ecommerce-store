@@ -3,12 +3,11 @@
 import React, { createContext, useState, ReactNode, useEffect } from "react";
 import { products, Product } from "@/lib/assets";
 
-// Type for the cart state: { "itemId": quantity }
+export type CartKey = string; 
 export type CartItems = {
-  [key: string]: number;
+  [key: CartKey]: number;
 };
 
-// Type for the context value
 export interface ShopContextType {
   products: Product[];
   currency: string;
@@ -18,10 +17,12 @@ export interface ShopContextType {
   showSearch: boolean;
   setShowSearch: (show: boolean) => void;
   cartItems: CartItems;
-  addToCart: (itemId: string) => void;
-  removeFromCart: (itemId: string) => void;
+  addToCart: (itemId: string, size: string) => void;
+  removeFromCart: (itemId: string, size: string) => void;
+  updateCartItemQuantity: (itemId: string, size: string, newQuantity: number) => void;
   getCartTotalAmount: () => number;
   getCartTotalItems: () => number;
+  getProductQuantity: (itemId: string, size: string) => number;
 }
 
 export const ShopContext = createContext<ShopContextType | null>(null);
@@ -30,10 +31,9 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItems>({});
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
-  const currency = "PKR";
-  const delivery_fee = 100;
+  const currency = "$";
+  const delivery_fee = 10.0;
 
-  // Load cart from localStorage on component mount
   useEffect(() => {
     const savedCart = localStorage.getItem("cartItems");
     if (savedCart) {
@@ -41,38 +41,66 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
     }
   }, []);
 
-  // Save cart to localStorage whenever it changes
   useEffect(() => {
     if (Object.keys(cartItems).length > 0) {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    } else {
+        localStorage.removeItem("cartItems");
     }
   }, [cartItems]);
 
-  const addToCart = (itemId: string) => {
+  const getCartKey = (itemId: string, size: string): CartKey => `${itemId}_${size}`;
+  const getItemInfoFromKey = (key: CartKey) => {
+    const [itemId, size] = key.split('_');
+    return { itemId, size };
+  };
+
+  const addToCart = (itemId: string, size: string) => {
+    const key = getCartKey(itemId, size);
     setCartItems((prev) => ({
       ...prev,
-      [itemId]: (prev[itemId] || 0) + 1,
+      [key]: (prev[key] || 0) + 1,
     }));
   };
 
-  const removeFromCart = (itemId: string) => {
+  const removeFromCart = (itemId: string, size: string) => {
+    const key = getCartKey(itemId, size);
     setCartItems((prev) => {
       const newCart = { ...prev };
-      if (newCart[itemId] > 1) {
-        newCart[itemId] -= 1;
-      } else {
-        delete newCart[itemId];
+      if (newCart[key] && newCart[key] > 0) {
+        newCart[key] -= 1;
+        if (newCart[key] === 0) {
+          delete newCart[key];
+        }
       }
       return newCart;
     });
   };
 
+  const updateCartItemQuantity = (itemId: string, size: string, newQuantity: number) => {
+    const key = getCartKey(itemId, size);
+    setCartItems((prev) => {
+      if (newQuantity <= 0) {
+        const newCart = { ...prev };
+        delete newCart[key];
+        return newCart;
+      }
+      return { ...prev, [key]: newQuantity };
+    });
+  };
+
+  const getProductQuantity = (itemId: string, size: string): number => {
+    const key = getCartKey(itemId, size);
+    return cartItems[key] || 0;
+  };
+
   const getCartTotalAmount = () => {
     let totalAmount = 0;
-    for (const itemId in cartItems) {
+    for (const key in cartItems) {
+      const { itemId } = getItemInfoFromKey(key);
       const product = products.find((p) => p._id === itemId);
       if (product) {
-        totalAmount += product.price * cartItems[itemId];
+        totalAmount += product.price * cartItems[key];
       }
     }
     return totalAmount;
@@ -80,8 +108,8 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
 
   const getCartTotalItems = () => {
     let totalItems = 0;
-    for (const itemId in cartItems) {
-      totalItems += cartItems[itemId];
+    for (const key in cartItems) {
+      totalItems += cartItems[key];
     }
     return totalItems;
   };
@@ -97,8 +125,10 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
     cartItems,
     addToCart,
     removeFromCart,
+    updateCartItemQuantity,
     getCartTotalAmount,
     getCartTotalItems,
+    getProductQuantity
   };
 
   return (
