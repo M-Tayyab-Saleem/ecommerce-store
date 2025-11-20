@@ -42,7 +42,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productData }) => {
                 alt={`${productData.name} thumbnail ${index + 1}`}
                 width={200} 
                 height={200}
-                className="w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer"
+                className="w-[24%] sm:w-full sm:mb-3 shrink-0 cursor-pointer"
               />
             ))}
           </div>
