@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function ShippingPolicyPage() {
     return (
-        <div className="container-custom py-20 border-t">
+        <div className="container-custom pt-24 pb-16">
             <div className="max-w-3xl mx-auto">
                 <h1 className="text-4xl font-bold text-gray-900 mb-8">Shipping Policy</h1>
 

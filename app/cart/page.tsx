@@ -2,171 +2,264 @@
 
 import React, { useContext } from "react";
 import { ShopContext, ShopContextType, CartKey } from "@/context/ShopContext";
-import { assets } from "@/lib/assets";
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2 } from "lucide-react";
+import { Trash2, ArrowLeft, Truck, Wallet } from "lucide-react";
+import { formatPKR } from "@/utils/format";
+import EmptyState from "@/components/EmptyState";
 
 // Helper function to extract info from the composite key
 const getItemInfoFromKey = (key: CartKey) => {
-    const parts = key.split('_');
-    return { 
-        itemId: parts[0], 
-        size: parts.length > 1 ? parts[1] : 'N/A' 
+    const parts = key.split("_");
+    return {
+        itemId: parts[0],
+        size: parts.length > 1 ? parts[1] : "N/A",
     };
 };
 
 const Cart = () => {
-  const {
-    products,
-    cartItems,
-    updateCartItemQuantity,
-    getCartTotalAmount,
-    currency,
-    delivery_fee,
-  } = useContext(ShopContext) as ShopContextType;
+    const {
+        products,
+        cartItems,
+        updateCartItemQuantity,
+        getCartTotalAmount,
+        delivery_fee,
+    } = useContext(ShopContext) as ShopContextType;
 
-  const totalAmount = getCartTotalAmount();
-  const cartKeys = Object.keys(cartItems);
+    const totalAmount = getCartTotalAmount();
+    const cartKeys = Object.keys(cartItems);
+    const cartItemCount = cartKeys.reduce((sum, key) => sum + cartItems[key], 0);
 
-  const getProductById = (id: string) => products.find(p => p._id === id);
+    const getProductById = (id: string) => products.find((p) => p._id === id);
 
-  return (
-    <div className="py-10 border-t border-gray-100">
-      
-      {/* Header */}
-      <div className="text-center mb-10">
-        <h1 className="text-4xl font-heading font-bold text-gray-900">
-          Shopping Cart
-        </h1>
-        <p className="text-xs text-gray-500 mt-1">
-          <Link href="/" className="hover:text-black">Home</Link> / Your Shopping Cart
-        </p>
-      </div>
+    // Calculate free shipping threshold
+    const freeShippingThreshold = 3000;
+    const remainingForFreeShipping = freeShippingThreshold - totalAmount;
+    const qualifiesForFreeShipping = remainingForFreeShipping <= 0;
+    const shippingCost = qualifiesForFreeShipping ? 0 : delivery_fee;
 
-      {totalAmount === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-2xl font-heading">Your cart is empty.</p>
-          <Link href="/collection" className="text-black font-semibold hover:underline mt-4 inline-block">
-            Continue Shopping
-          </Link>
-        </div>
-      ) : (
-        <div className="flex flex-col lg:flex-row gap-12">
-            
-            {/* Left Side: Cart Items Table (70%) */}
-            <div className="lg:w-2/3">
-                {/* Table Headers */}
-                <div className="grid grid-cols-4 items-center gap-4 text-sm text-gray-700 font-semibold uppercase tracking-wider border-b pb-4 max-sm:hidden">
-                    <p>Product</p>
-                    <p>Price</p>
-                    <p>Quantity</p>
-                    <p>Total</p>
-                </div>
+    return (
+        <div className="container-custom pt-24 pb-16">
+            {/* Header */}
+            <div className="mb-8">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                    Shopping Cart
+                </h1>
+                <p className="text-gray-600">
+                    {cartItemCount > 0
+                        ? `You have ${cartItemCount} item${cartItemCount > 1 ? "s" : ""} in your cart`
+                        : "Your cart is empty"}
+                </p>
+            </div>
 
-                {/* Cart Rows */}
-                {cartKeys.map((key) => {
-                    const { itemId, size } = getItemInfoFromKey(key);
-                    const product = getProductById(itemId);
-                    const quantity = cartItems[key];
-                    
-                    if (!product) return null;
-                    
-                    const itemTotal = product.price * quantity;
-
-                    return (
-                        <div key={key} className="grid grid-cols-2 sm:grid-cols-4 items-center gap-4 text-sm text-gray-700 py-6 border-b">
-                            
-                            {/* Product Column */}
-                            <div className="col-span-2 sm:col-span-1 flex items-center gap-4">
-                                <Image
-                                    src={product.image[0]}
-                                    alt={product.name}
-                                    width={80}
-                                    height={100}
-                                    className="w-20 h-24 object-cover"
-                                />
-                                <div>
-                                    <p className="font-medium text-black">{product.name}</p>
-                                    <p className="text-xs text-gray-500">Size: {size}</p>
-                                    <button 
-                                        className="text-xs text-[#ff5e5e] hover:text-black mt-1 flex items-center gap-1 transition"
-                                        onClick={() => updateCartItemQuantity(itemId, size, 0)} // Remove item
-                                    >
-                                        <Trash2 size={12} /> Remove
-                                    </button>
+            {cartItemCount === 0 ? (
+                <EmptyState
+                    type="cart"
+                    title="Your cart is empty"
+                    message="Looks like you haven't added any handmade pieces to your cart yet. Explore our collection!"
+                    actionLabel="Start Shopping"
+                    actionHref="/collection"
+                />
+            ) : (
+                <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+                    {/* Left Side: Cart Items */}
+                    <div className="lg:w-2/3">
+                        {/* Free Shipping Progress */}
+                        {!qualifiesForFreeShipping && (
+                            <div className="bg-primary/5 rounded-xl p-4 mb-6">
+                                <div className="flex items-center justify-between text-sm mb-2">
+                                    <span className="text-gray-700">
+                                        Add {formatPKR(remainingForFreeShipping)} more for{" "}
+                                        <strong>FREE shipping!</strong>
+                                    </span>
+                                    <span className="text-primary font-medium">
+                                        {Math.round((totalAmount / freeShippingThreshold) * 100)}%
+                                    </span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                        className="bg-primary h-2 rounded-full transition-all duration-500"
+                                        style={{
+                                            width: `${Math.min(
+                                                (totalAmount / freeShippingThreshold) * 100,
+                                                100
+                                            )}%`,
+                                        }}
+                                    />
                                 </div>
                             </div>
-                            
-                            {/* Price */}
-                            <p className="hidden sm:block font-medium">{currency}{product.price}.00</p>
-                            
-                            {/* Quantity Control */}
-                            <div className="flex justify-center border border-gray-300 max-w-[120px]">
-                                <button 
-                                    onClick={() => updateCartItemQuantity(itemId, size, quantity - 1)}
-                                    className="px-3 py-2 text-gray-600 hover:bg-gray-100 transition"
-                                >
-                                    -
-                                </button>
-                                <span className="px-4 py-2 border-x text-black font-semibold">{quantity}</span>
-                                <button 
-                                    onClick={() => updateCartItemQuantity(itemId, size, quantity + 1)}
-                                    className="px-3 py-2 text-gray-600 hover:bg-gray-100 transition"
-                                >
-                                    +
-                                </button>
+                        )}
+
+                        {qualifiesForFreeShipping && (
+                            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
+                                <Truck size={24} className="text-green-600" />
+                                <span className="text-green-800 font-medium">
+                                    🎉 Congratulations! You qualify for FREE shipping!
+                                </span>
                             </div>
-                            
-                            {/* Total */}
-                            <p className="font-bold text-black text-right sm:text-left">{currency}{itemTotal.toFixed(2)}</p>
+                        )}
+
+                        {/* Cart Items */}
+                        <div className="space-y-4">
+                            {cartKeys.map((key) => {
+                                const { itemId, size } = getItemInfoFromKey(key);
+                                const product = getProductById(itemId);
+                                const quantity = cartItems[key];
+
+                                if (!product) return null;
+
+                                const itemTotal = product.price * quantity;
+                                const productUrl = `/product/${itemId}`;
+
+                                return (
+                                    <div
+                                        key={key}
+                                        className="bg-white border border-gray-200 rounded-xl p-4 flex gap-4"
+                                    >
+                                        {/* Product Image */}
+                                        <Link
+                                            href={productUrl}
+                                            className="shrink-0 w-24 h-28 rounded-lg overflow-hidden bg-gray-100"
+                                        >
+                                            <Image
+                                                src={product.image[0]}
+                                                alt={product.name}
+                                                width={96}
+                                                height={112}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </Link>
+
+                                        {/* Product Details */}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex justify-between gap-2">
+                                                <div>
+                                                    <Link
+                                                        href={productUrl}
+                                                        className="font-medium text-gray-900 hover:text-primary transition-colors line-clamp-2"
+                                                    >
+                                                        {product.name}
+                                                    </Link>
+                                                    {size !== "N/A" && size !== "default" && (
+                                                        <p className="text-sm text-gray-500 mt-0.5">
+                                                            Size: {size}
+                                                        </p>
+                                                    )}
+                                                    <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
+                                                        ✨ Handmade
+                                                    </p>
+                                                </div>
+                                                <p className="font-bold text-gray-900 whitespace-nowrap">
+                                                    {formatPKR(itemTotal)}
+                                                </p>
+                                            </div>
+
+                                            {/* Quantity & Remove */}
+                                            <div className="flex items-center justify-between mt-3">
+                                                <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                                                    <button
+                                                        onClick={() =>
+                                                            updateCartItemQuantity(itemId, size, quantity - 1)
+                                                        }
+                                                        className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 transition-colors"
+                                                        aria-label="Decrease quantity"
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <span className="px-4 py-1.5 border-x border-gray-300 font-medium min-w-[48px] text-center">
+                                                        {quantity}
+                                                    </span>
+                                                    <button
+                                                        onClick={() =>
+                                                            updateCartItemQuantity(itemId, size, quantity + 1)
+                                                        }
+                                                        className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 transition-colors"
+                                                        aria-label="Increase quantity"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+
+                                                <button
+                                                    className="text-sm text-red-500 hover:text-red-700 flex items-center gap-1 transition-colors"
+                                                    onClick={() =>
+                                                        updateCartItemQuantity(itemId, size, 0)
+                                                    }
+                                                >
+                                                    <Trash2 size={16} />
+                                                    <span className="hidden sm:inline">Remove</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
-                    );
-                })}
-            </div>
 
-            {/* Right Side: Cart Summary (30%) */}
-            <div className="lg:w-1/3 p-6 bg-gray-50 rounded-lg h-fit shadow-md">
-                <h2 className="text-2xl font-heading font-bold mb-4">Cart Summary</h2>
+                        {/* Continue Shopping */}
+                        <Link
+                            href="/collection"
+                            className="inline-flex items-center gap-2 text-gray-600 hover:text-primary mt-6 transition-colors"
+                        >
+                            <ArrowLeft size={18} />
+                            Continue Shopping
+                        </Link>
+                    </div>
 
-                {/* Gift Wrap Checkbox */}
-                <div className="flex items-center gap-3 mb-4 text-sm font-medium">
-                    <input type="checkbox" id="wrap" className="w-4 h-4 text-black border-gray-300 focus:ring-black" />
-                    <label htmlFor="wrap">For {currency}10.00 Please Wrap The Product</label>
+                    {/* Right Side: Cart Summary */}
+                    <div className="lg:w-1/3">
+                        <div className="bg-gray-50 rounded-2xl p-6 sticky top-24">
+                            <h2 className="text-xl font-bold text-gray-900 mb-4">
+                                Order Summary
+                            </h2>
+
+                            {/* Totals */}
+                            <div className="space-y-3">
+                                <div className="flex justify-between text-gray-700">
+                                    <p>Subtotal</p>
+                                    <p className="font-medium">{formatPKR(totalAmount)}</p>
+                                </div>
+                                <div className="flex justify-between text-gray-700">
+                                    <p>Shipping</p>
+                                    <p className="font-medium">
+                                        {qualifiesForFreeShipping ? (
+                                            <span className="text-green-600">FREE</span>
+                                        ) : (
+                                            formatPKR(shippingCost)
+                                        )}
+                                    </p>
+                                </div>
+                                <hr className="border-gray-200" />
+                                <div className="flex justify-between text-lg font-bold text-gray-900 pt-1">
+                                    <p>Total</p>
+                                    <p>{formatPKR(totalAmount + shippingCost)}</p>
+                                </div>
+                            </div>
+
+                            {/* Checkout Button */}
+                            <Link href="/order-place" className="block mt-6">
+                                <button className="btn-primary w-full py-4 font-semibold">
+                                    Proceed to Checkout
+                                </button>
+                            </Link>
+
+                            {/* Trust Badges */}
+                            <div className="mt-6 pt-6 border-t border-gray-200">
+                                <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                                    <Wallet size={16} className="text-primary" />
+                                    <span>Cash on Delivery Available</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                    <Truck size={16} className="text-primary" />
+                                    <span>Pakistan-wide Delivery</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                {/* Totals */}
-                <div className="space-y-3">
-                    <div className="flex justify-between text-gray-700">
-                        <p>Subtotal</p>
-                        <p className="font-medium">{currency}{totalAmount.toFixed(2)}</p>
-                    </div>
-                    <div className="flex justify-between text-gray-700">
-                        <p>Shipping</p>
-                        <p className="font-medium">{currency}{delivery_fee.toFixed(2)}</p>
-                    </div>
-                    <hr className="border-gray-200" />
-                    <div className="flex justify-between text-xl font-bold text-black pt-2">
-                        <p>Total</p>
-                        <p>{currency}{(totalAmount + delivery_fee).toFixed(2)}</p>
-                    </div>
-                </div>
-
-                <Link href="/order-place" className="mt-6 block">
-                    <button className="bg-black text-white w-full py-4 text-sm font-bold uppercase tracking-wider hover:bg-[#ff5e5e] transition">
-                        Checkout
-                    </button>
-                </Link>
-                
-                <Link href="/collection" className="text-sm text-gray-600 hover:text-black mt-3 block text-center">
-                    Continue Shopping
-                </Link>
-
-            </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default Cart;

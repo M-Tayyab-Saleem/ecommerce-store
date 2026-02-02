@@ -1,67 +1,123 @@
-"use client"; // Must be a Client Component to use useContext
+"use client";
 
-import React, { useContext } from 'react';
-import { ShopContext, ShopContextType } from '@/context/ShopContext';
+import React, { useContext, useState } from "react";
+import { ShopContext, ShopContextType } from "@/context/ShopContext";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingBag } from 'lucide-react';
-import { formatPKR } from '@/utils/format';
+import { ShoppingBag, Heart } from "lucide-react";
+import { formatPKR } from "@/utils/format";
 
-// 1. Define the types for your component's props
 interface ProductItemProps {
   id: string;
   image: string[];
   name: string;
   price: number;
-  slug?: string; // Optional slug for SEO-friendly URLs
+  slug?: string;
+  bestseller?: boolean;
+  customizable?: boolean;
 }
 
-// 2. Use the Props interface and extract data from context
-const ProductItem: React.FC<ProductItemProps> = ({ id, image, name, price, slug }) => {
-  const context = useContext(ShopContext);
+const ProductItem: React.FC<ProductItemProps> = ({
+  id,
+  image,
+  name,
+  price,
+  slug,
+  bestseller = false,
+  customizable = false,
+}) => {
+  const { addToCart } = useContext(ShopContext) as ShopContextType;
+  const [isHovered, setIsHovered] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-  if (!context) return null;
-
-  // Use slug if available, otherwise fall back to ID
   const productUrl = slug ? `/products/${slug}` : `/product/${id}`;
+  const imageUrl = image?.[0] || "/images/placeholder.jpg";
+  const hoverImageUrl = image?.[1] || imageUrl;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(id, "default");
+  };
 
   return (
-    <Link href={productUrl} className='group block cursor-pointer bg-white rounded-[10px] shadow-[0_5px_15px_rgba(0,0,0,0.1)] overflow-hidden transition-transform duration-300 hover:-translate-y-1'>
-      <div className='relative overflow-hidden bg-gray-100 aspect-[3/4]'>
+    <div className="product-card group">
+      {/* Image Container */}
+      <Link
+        href={productUrl}
+        className="relative block aspect-square overflow-hidden rounded-xl bg-gray-100"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Loading Skeleton */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+        )}
+
+        {/* Main Image */}
         <Image
-          src={image[0] || '/placeholder-product.jpg'}
-          alt={`${name} - Handmade Resin Product`}
+          src={isHovered && image?.length > 1 ? hoverImageUrl : imageUrl}
+          alt={name}
           fill
-          className='object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 ease-out'
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className={`object-cover transition-all duration-500 group-hover:scale-105 ${imageLoaded ? "opacity-100" : "opacity-0"
+            }`}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          onLoad={() => setImageLoaded(true)}
         />
 
-        {/* Overlay with Quick Action */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <button className="bg-white text-primary px-6 py-3 flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg hover:bg-primary hover:text-white rounded-[5px]">
-            <ShoppingBag size={16} />
-            <span className="text-xs font-bold tracking-widest uppercase">View</span>
+        {/* Badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          {bestseller && (
+            <span className="px-2.5 py-1 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider rounded-full">
+              Best Seller
+            </span>
+          )}
+          {customizable && (
+            <span className="px-2.5 py-1 bg-primary text-white text-[10px] font-bold uppercase tracking-wider rounded-full">
+              Customizable
+            </span>
+          )}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <button
+            className="w-9 h-9 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-100 transition-colors"
+            aria-label="Add to wishlist"
+          >
+            <Heart size={18} className="text-gray-600" />
           </button>
         </div>
 
-        {/* Handmade Badge */}
-        <div className="absolute top-3 left-3 bg-primary px-2 py-1 text-[10px] font-bold tracking-widest uppercase text-white rounded-[3px]">
-          Handmade
+        {/* Add to Cart Button */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+          <button
+            onClick={handleAddToCart}
+            className="w-full bg-white text-gray-900 font-medium py-2.5 rounded-lg shadow-md hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2"
+          >
+            <ShoppingBag size={16} />
+            <span className="text-sm">Add to Cart</span>
+          </button>
+        </div>
+      </Link>
+
+      {/* Product Info */}
+      <div className="p-3">
+        <Link href={productUrl}>
+          <h3 className="font-medium text-gray-900 truncate hover:text-primary transition-colors">
+            {name}
+          </h3>
+        </Link>
+        <div className="mt-1.5 flex items-center justify-between">
+          <span className="font-bold text-gray-900">{formatPKR(price)}</span>
+          {/* Handmade indicator */}
+          <span className="text-xs text-gray-500 flex items-center gap-1">
+            ✨ Handmade
+          </span>
         </div>
       </div>
-
-      <div className="p-4 space-y-1 text-center">
-        <h3 className='font-medium text-lg tracking-wide truncate text-gray-800 group-hover:text-primary transition-colors'>{name}</h3>
-
-        <div className="flex items-center justify-center gap-3">
-          <p className='text-sm font-bold text-primary'>{formatPKR(price)}</p>
-        </div>
-
-        {/* COD indicator */}
-        <p className="text-xs text-gray-500">COD Available</p>
-      </div>
-    </Link>
-  )
-}
+    </div>
+  );
+};
 
 export default ProductItem;

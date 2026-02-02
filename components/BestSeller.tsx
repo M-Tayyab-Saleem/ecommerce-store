@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Title from "./Title";
-import ProductItem from './ProductItem';
+import React from "react";
+import ProductItem from "./ProductItem";
+import SectionHeading from "./SectionHeading";
 
 type Product = {
   _id: string;
@@ -15,6 +15,7 @@ type Product = {
   sizes: string[];
   date: number;
   bestseller: boolean;
+  slug?: string;
 };
 
 interface BestSellerProps {
@@ -22,31 +23,57 @@ interface BestSellerProps {
 }
 
 const BestSeller: React.FC<BestSellerProps> = ({ products }) => {
-  const [bestSeller, setBestSeller] = useState<Product[]>([]);
+  // Filter bestsellers and show up to 4
+  const bestSellers = products.filter((item) => item.bestseller).slice(0, 4);
 
-  useEffect(() => {
-    // Show 4 best sellers
-    const bestProduct = products.filter((item) => item.bestseller);
-    setBestSeller(bestProduct.slice(0, 4)); 
-  }, [products]);
+  if (bestSellers.length === 0) {
+    // If no bestsellers, show first 4 products
+    const fallbackProducts = products.slice(0, 4);
+    return (
+      <section className="section-sm">
+        <SectionHeading
+          label="Customer Favorites"
+          title="Best Sellers"
+          subtitle="The pieces everyone is loving right now"
+        />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {fallbackProducts.map((item: Product) => (
+            <ProductItem
+              key={item._id}
+              id={item._id}
+              image={item.image}
+              price={item.price}
+              name={item.name}
+              slug={item.slug}
+            />
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <div className="my-16">
-      <div className="text-center">
-        <Title text1={"TOP PICKS"} text2={"BEST SELLERS"} />
-        <p className="w-full m-auto text-sm text-gray-600 max-w-xl">
-          The pieces everyone is loving right now. Shop the items selling fast!
-        </p>
+    <section className="section-sm">
+      <SectionHeading
+        label="Customer Favorites"
+        title="Best Sellers"
+        subtitle="The pieces everyone is loving right now"
+      />
+
+      {/* Products Grid - 4 columns on desktop */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        {bestSellers.map((item: Product) => (
+          <ProductItem
+            key={item._id}
+            id={item._id}
+            image={item.image}
+            price={item.price}
+            name={item.name}
+            slug={item.slug}
+          />
+        ))}
       </div>
-      {/* Rendering BEST SELLERS (4 columns desktop) */}
-      <div className='grid grid-cols-2 md:grid-cols-4 gap-6 mt-10'>
-        {
-            bestSeller.map((item: Product) => (
-                <ProductItem key={item._id} id={item._id} image={item.image} price={item.price} name={item.name} />
-            ))
-        }
-      </div>
-    </div>
+    </section>
   );
 };
 
