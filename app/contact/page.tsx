@@ -18,7 +18,7 @@ const TitleComponent = ({ text1, text2 }: { text1: string, text2: string }) => {
 // Now, the Contact page
 const Contact = () => {
   return (
-    <div className="py-10 border-t">
+    <div className="container-custom py-10 pt-32 border-t">
       <div className="text-center mb-10">
         <TitleComponent text1="GET IN" text2="TOUCH" />
         <p className="text-4xl font-bold prata-regular">Contact Us</p>
@@ -59,7 +59,7 @@ const Contact = () => {
             </button>
           </form>
         </div>
-        
+
         {/* Right Side: Details & Image */}
         <div className="flex-1 w-full flex flex-col gap-5">
           <h3 className="text-2xl font-semibold">Contact Details</h3>
@@ -68,11 +68,11 @@ const Contact = () => {
             <p><strong>Email:</strong> contact@epoxysista.com</p>
             <p><strong>Address:</strong> 123 Fashion Ave, New York, NY 10001</p>
           </div>
-          <Image 
-            src={assets.contact_img} 
-            alt="Contact" 
-            width={500} 
-            height={400} 
+          <Image
+            src={assets.contact_img}
+            alt="Contact"
+            width={500}
+            height={400}
             className="rounded-lg shadow-lg w-full object-cover"
           />
         </div>

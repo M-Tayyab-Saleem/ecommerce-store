@@ -1,42 +1,45 @@
 @import "tailwindcss";
 
 @theme {
-  --font-prata: var(--font-prata);
-  --font-outfit: var(--font-outfit);
+  --color-primary: #e91e63;
+  --color-primary-hover: #c2185b;
+  --color-dark-bg: #242424;
+  --image-hero-bg: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+  --image-deep-blue-bg: linear-gradient(to bottom right, #1e293b, #0f172a);
+  --font-inter: var(--font-inter);
 }
 
 :root {
   --foreground: #1a1a1a;
   --background: #ffffff;
-  --primary: #1a1a1a;
-  --accent: #d4a373; /* Elegant brownish-gold accent */
-  --soft-gray: #f9f9f9;
-  --border-color: #e5e5e5;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-outfit);
+  font-family: var(--font-inter), sans-serif;
 }
 
-/* Custom Utilities */
-.font-heading {
-  font-family: var(--font-prata);
-}
+/* Custom Utilities for Vornox Buttons & Layout */
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white rounded-[5px] font-semibold px-6 py-3 transition-all hover:bg-primary-hover cursor-pointer;
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-prata);
-}
+  .btn-outline {
+    @apply bg-transparent text-primary border-2 border-primary rounded-[5px] font-semibold px-6 py-3 hover:bg-primary hover:text-white transition-all cursor-pointer;
+  }
 
-.container-custom {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  .container-custom {
+    @apply max-w-[1920px] mx-auto px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw];
+  }
 }
 
 /* Hide scrollbar */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;

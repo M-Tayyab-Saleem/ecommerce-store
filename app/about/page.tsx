@@ -7,12 +7,12 @@ import Link from 'next/link';
 const TitleComponent = ({ text1, text2 }: { text1: string, text2: string }) => {
   return (
     <div className='flex flex-col items-center justify-center mb-6'>
-        <p className='text-xs text-gray-500 uppercase tracking-widest'>
-            {text1}
-        </p> 
-        <h2 className='text-3xl font-heading font-bold text-gray-900 mt-1'>
-            {text2}
-        </h2>
+      <p className='text-xs text-gray-500 uppercase tracking-widest'>
+        {text1}
+      </p>
+      <h2 className='text-3xl font-heading font-bold text-gray-900 mt-1'>
+        {text2}
+      </h2>
     </div>
   );
 };
@@ -21,8 +21,8 @@ const TitleComponent = ({ text1, text2 }: { text1: string, text2: string }) => {
 // Now, the About page
 const About = () => {
   return (
-    <div className="py-10 border-t border-gray-100">
-      
+    <div className="container-custom py-10 pt-32 border-t border-gray-100">
+
       {/* Header */}
       <div className="text-center mb-10">
         <h1 className="text-4xl font-heading font-bold text-gray-900">
@@ -35,11 +35,11 @@ const About = () => {
 
       <div className="flex flex-col md:flex-row items-center gap-12 max-w-6xl mx-auto">
         <div className="md:w-1/2">
-          <Image 
-            src={assets.about_img} 
-            alt="About us - collection of clothes" 
-            width={600} 
-            height={600} 
+          <Image
+            src={assets.about_img}
+            alt="About us - collection of clothes"
+            width={600}
+            height={600}
             className="w-full h-auto object-cover"
           />
         </div>
