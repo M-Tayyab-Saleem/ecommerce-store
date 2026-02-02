@@ -1,38 +1,16 @@
-import { products, Product } from '@/lib/assets'; 
-import ProductDetails from '@/components/ProductDetails';
-import RelatedProducts from '@/components/RelatedProducts';
+import { redirect } from 'next/navigation';
 
-// This interface tells TS what to expect for params
 interface ProductPageParams {
-    params: {
-      productId: string;
-    };
-  }
-  
+  params: Promise<{
+    productId: string;
+  }>;
+}
 
-// This is a Server Component, running without 'use client'
+// Redirect old ID-based URLs to new slug-based structure
 export default async function ProductPage({ params }: ProductPageParams) {
-  const { productId } = params;
+  const { productId } = await params;
 
-  // Fetch data ON THE SERVER
-  const productData = products.find(
-    (item) => item._id === productId
-  ) as Product | undefined;
-
-  if (!productData) {
-    return <div className='py-20 text-center text-2xl font-heading'>Product not found</div>;
-  }
-
-  // Pass server-fetched data to the Client Component
-  return (
-    <div>
-      <ProductDetails productData={productData} />
-      
-      {/* Related Products is a separate Server Component */}
-      <RelatedProducts 
-        category={productData.category} 
-        subCategory={productData.subCategory} 
-      />
-    </div>
-  );
+  // Redirect to products listing page
+  // In a real scenario, you might want to fetch the product by ID and redirect to its slug
+  redirect('/products');
 }
