@@ -146,7 +146,6 @@ productSchema.pre('save', function () {
 });
 
 // Indexes for faster queries
-productSchema.index({ slug: 1 });
 productSchema.index({ category: 1 });
 productSchema.index({ isActive: 1, isDeleted: 1 });
 productSchema.index({ name: 'text', description: 'text' });

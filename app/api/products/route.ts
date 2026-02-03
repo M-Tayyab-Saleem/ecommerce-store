@@ -67,6 +67,8 @@ export async function GET(request: NextRequest) {
         const isBestSeller = searchParams.get('isBestSeller');
         const isLatest = searchParams.get('isLatest');
 
+        const isActiveParam = searchParams.get('isActive');
+
         // Check if user is admin
         const authResult = await verifyAuth(request);
         const isAdmin = authResult.success && authResult.user?.role === 'admin';
@@ -76,8 +78,30 @@ export async function GET(request: NextRequest) {
             isDeleted: false,
         };
 
-        // Only show active products for non-admin users
-        if (!isAdmin || !includeInactive) {
+        // Admin filtering logic
+        if (isAdmin) {
+            // If admin, check if specific status requested
+            if (isActiveParam === 'true') {
+                query.isActive = true;
+            } else if (isActiveParam === 'false') {
+                query.isActive = false;
+            }
+            // If isActiveParam is not set or 'all', implicitly show all (do not set query.isActive)
+            // UNLESS includeInactive is explicitly false? Default behavior for admin is usually 'show all' in admin view?
+            // But let's stick to: if not filtered, show all is fine, OR stick to existing 'includeInactive' logic?
+            // Let's support the 'includeInactive' as 'show all'.
+
+            if (!isActiveParam && !includeInactive) {
+                // Default to active only if no specific request? 
+                // Actually, usually admin wants to see EVERYTHING by default or strictly active? 
+                // Existing code was: if (!includeInactive) query.isActive = true;
+                query.isActive = true;
+            } else if (includeInactive) {
+                // Show all (delete isActive query if it exists? No, just don't set it)
+                if (!isActiveParam) delete query.isActive;
+            }
+        } else {
+            // Non-admin: ALWAYS active only
             query.isActive = true;
         }
 

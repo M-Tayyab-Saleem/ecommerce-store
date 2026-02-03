@@ -25,8 +25,9 @@ const sortOptions = [
     { value: "name-asc", label: "Name: A to Z" },
 ];
 
-const ProductsPage = () => {
+const ProductsContent = () => {
     const searchParams = useSearchParams();
+    // ... (rest of the component logic)
     const router = useRouter();
     const urlCategorySlug = searchParams.get("category");
 
@@ -529,4 +530,10 @@ const ProductsPage = () => {
     );
 };
 
-export default ProductsPage;
+export default function ProductsPage() {
+    return (
+        <React.Suspense fallback={<div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin text-primary" size={32} /></div>}>
+            <ProductsContent />
+        </React.Suspense>
+    );
+}

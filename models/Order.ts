@@ -217,7 +217,7 @@ orderSchema.pre('save', function () {
 });
 
 // Indexes
-orderSchema.index({ orderId: 1 });
+// orderSchema.index({ orderId: 1 }); // Removed (covered by unique: true)
 orderSchema.index({ user: 1 });
 orderSchema.index({ orderStatus: 1 });
 orderSchema.index({ paymentStatus: 1 });
