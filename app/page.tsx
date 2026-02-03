@@ -10,31 +10,54 @@ import InstagramGallery from "@/components/InstagramGallery";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import NewsletterBox from "@/components/NewsletterBox";
 import WhatsAppCTA from "@/components/WhatsAppCTA";
+import { IProduct } from "@/types/product";
 
-// Import product data
-import { products } from "@/lib/assets";
+// API base URL for server-side fetches
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
-type Product = {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string[];
-  category: string;
-  subCategory: string;
-  sizes: string[];
-  date: number;
-  bestseller: boolean;
-};
+// Function to get products from backend API (server-side)
+async function getProducts(): Promise<{
+  latestProducts: IProduct[];
+  bestSellerProducts: IProduct[];
+  allProducts: IProduct[];
+}> {
+  try {
+    // Fetch latest products
+    const latestRes = await fetch(
+      `${API_URL}/products?isLatest=true&limit=10&sort=createdAt&order=desc`,
+      { next: { revalidate: 60 } } // Revalidate every 60 seconds
+    );
+    const latestData = await latestRes.json();
 
-// Function to get products (server-side)
-const getProducts = async () => {
-  return {
-    allProducts: products as Product[],
-    latestProducts: products.slice(0, 10) as Product[],
-    bestSellerProducts: products.filter((item) => item.bestseller).slice(0, 5) as Product[],
-  };
-};
+    // Fetch bestseller products  
+    const bestSellerRes = await fetch(
+      `${API_URL}/products?isBestSeller=true&limit=5`,
+      { next: { revalidate: 60 } }
+    );
+    const bestSellerData = await bestSellerRes.json();
+
+    // Fetch all products as fallback
+    const allRes = await fetch(
+      `${API_URL}/products?limit=10`,
+      { next: { revalidate: 60 } }
+    );
+    const allData = await allRes.json();
+
+    return {
+      latestProducts: latestData.data || [],
+      bestSellerProducts: bestSellerData.data || [],
+      allProducts: allData.data || [],
+    };
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    // Return empty arrays if API fails
+    return {
+      latestProducts: [],
+      bestSellerProducts: [],
+      allProducts: [],
+    };
+  }
+}
 
 export default async function Home() {
   const { latestProducts, bestSellerProducts, allProducts } = await getProducts();

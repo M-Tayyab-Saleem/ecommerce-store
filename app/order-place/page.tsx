@@ -67,7 +67,7 @@ const CheckoutPage = () => {
         <h1 className="text-2xl font-bold text-gray-900 mb-4">
           Your cart is empty
         </h1>
-        <Link href="/collection" className="btn-primary inline-block">
+        <Link href="/products" className="btn-primary inline-block">
           Continue Shopping
         </Link>
       </div>

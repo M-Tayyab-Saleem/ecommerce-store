@@ -14,21 +14,21 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    image: "/images/hero-1.jpg",
+    image: "/images/hero-1.jpeg",
     title: "Handmade",
     subtitle: "Resin Artistry",
     description:
       "Discover unique, handcrafted resin jewelry and décor made with love in Pakistan.",
   },
   {
-    image: "/images/hero-2.jpg",
+    image: "/images/hero-2.jpeg",
     title: "Custom",
     subtitle: "Creations",
     description:
       "Personalize your pieces with names, colors, and designs. Made just for you.",
   },
   {
-    image: "/images/hero-3.jpg",
+    image: "/images/hero-3.jpeg",
     title: "Beautiful",
     subtitle: "Home Décor",
     description:
@@ -50,7 +50,7 @@ const Hero: React.FC = () => {
   }, []);
 
   return (
-    <section className="relative w-full min-h-[90vh] bg-hero-bg overflow-hidden flex items-center pt-20">
+    <section className="relative w-full min-h-[90vh] bg-hero-bg overflow-hidden flex items-center pt-10">
       <div className="container-custom w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center py-12 lg:py-20">
           {/* Text Content */}
@@ -77,7 +77,7 @@ const Hero: React.FC = () => {
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-              <Link href="/collection" className="btn-primary text-center">
+              <Link href="/products" className="btn-primary text-center">
                 Shop Now
               </Link>
               <Link href="/about" className="btn-outline text-center">
@@ -135,8 +135,8 @@ const Hero: React.FC = () => {
                       key={idx}
                       onClick={() => setCurrentSlide(idx)}
                       className={`w-2 h-2 rounded-full transition-all ${idx === currentSlide
-                          ? "bg-primary w-6"
-                          : "bg-gray-300 hover:bg-gray-400"
+                        ? "bg-primary w-6"
+                        : "bg-gray-300 hover:bg-gray-400"
                         }`}
                       aria-label={`Go to slide ${idx + 1}`}
                     />

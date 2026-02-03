@@ -111,7 +111,7 @@ const MyOrdersPage = () => {
                     title="No orders yet"
                     message="When you place an order, it will appear here so you can track it."
                     actionLabel="Start Shopping"
-                    actionHref="/collection"
+                    actionHref="/products"
                 />
             ) : (
                 <div className="space-y-6">

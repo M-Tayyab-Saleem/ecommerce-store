@@ -64,6 +64,8 @@ export async function GET(request: NextRequest) {
         const order = searchParams.get('order') || 'desc';
         const includeInactive = searchParams.get('includeInactive') === 'true';
         const lowStockOnly = searchParams.get('lowStockOnly') === 'true';
+        const isBestSeller = searchParams.get('isBestSeller');
+        const isLatest = searchParams.get('isLatest');
 
         // Check if user is admin
         const authResult = await verifyAuth(request);
@@ -79,9 +81,18 @@ export async function GET(request: NextRequest) {
             query.isActive = true;
         }
 
-        // Category filter
-        if (category && mongoose.Types.ObjectId.isValid(category)) {
-            query.category = new mongoose.Types.ObjectId(category);
+        // Category filter - accepts either ObjectId or slug
+        if (category) {
+            if (mongoose.Types.ObjectId.isValid(category)) {
+                query.category = new mongoose.Types.ObjectId(category);
+            } else {
+                // Try to find category by slug
+                const Category = mongoose.models.Category || (await import('@/models/Category')).default;
+                const categoryDoc = await Category.findOne({ slug: category, isActive: true });
+                if (categoryDoc) {
+                    query.category = categoryDoc._id;
+                }
+            }
         }
 
         // Search filter
@@ -99,6 +110,16 @@ export async function GET(request: NextRequest) {
         // Low stock filter (admin only)
         if (isAdmin && lowStockOnly) {
             query.$expr = { $lte: ['$stock', '$lowStockThreshold'] };
+        }
+
+        // Best seller filter
+        if (isBestSeller === 'true') {
+            query.isBestSeller = true;
+        }
+
+        // Latest products filter
+        if (isLatest === 'true') {
+            query.isLatest = true;
         }
 
         // Sorting

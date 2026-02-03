@@ -14,14 +14,14 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
   { name: "Home", href: "/" },
-  { name: "Shop", href: "/collection" },
+  { name: "Shop", href: "/products" },
   {
     name: "Categories",
     href: "#",
     dropdown: [
-      { name: "Jewelry", href: "/collection?category=jewelry" },
-      { name: "Keychains", href: "/collection?category=keychains" },
-      { name: "Home Décor", href: "/collection?category=home-decor" },
+      { name: "Jewelry", href: "/products?category=jewelry" },
+      { name: "Keychains", href: "/products?category=keychains" },
+      { name: "Home Décor", href: "/products?category=home-decor" },
       { name: "Custom Orders", href: "/contact" },
     ],
   },
@@ -77,9 +77,9 @@ const Navbar = () => {
               {link.dropdown ? (
                 <>
                   <button
-                    className={`flex items-center gap-1 py-2 font-medium transition-colors hover:text-primary ${pathname.startsWith("/collection?category")
-                        ? "text-primary"
-                        : "text-gray-700"
+                    className={`flex items-center gap-1 py-2 font-medium transition-colors hover:text-primary ${pathname.startsWith("/products?category")
+                      ? "text-primary"
+                      : "text-gray-700"
                       }`}
                     onClick={() => toggleDropdown(link.name)}
                     onMouseEnter={() => setActiveDropdown(link.name)}
@@ -94,8 +94,8 @@ const Navbar = () => {
                   {/* Dropdown Menu */}
                   <div
                     className={`absolute top-full left-0 pt-2 transition-all duration-200 ${activeDropdown === link.name
-                        ? "opacity-100 visible translate-y-0"
-                        : "opacity-0 invisible -translate-y-2"
+                      ? "opacity-100 visible translate-y-0"
+                      : "opacity-0 invisible -translate-y-2"
                       }`}
                     onMouseLeave={() => setActiveDropdown(null)}
                   >
@@ -233,8 +233,8 @@ const Navbar = () => {
                     </button>
                     <div
                       className={`bg-gray-50 overflow-hidden transition-all duration-300 ${activeDropdown === link.name
-                          ? "max-h-60 opacity-100"
-                          : "max-h-0 opacity-0"
+                        ? "max-h-60 opacity-100"
+                        : "max-h-0 opacity-0"
                         }`}
                     >
                       {link.dropdown.map((item) => (

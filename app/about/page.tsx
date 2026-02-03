@@ -168,7 +168,7 @@ const About = () => {
             Explore our collection or get in touch for a custom creation made just for you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/collection" className="btn-primary">
+            <Link href="/products" className="btn-primary">
               Shop Collection
             </Link>
             <Link href="/contact" className="btn-outline">

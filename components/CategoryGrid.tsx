@@ -19,25 +19,25 @@ interface CategoryGridProps {
 const defaultCategories: Category[] = [
     {
         name: "Jewelry",
-        image: "/images/category-jewelry.jpg",
-        href: "/collection?category=jewelry",
+        image: "/images/category-jewelry.jpeg",
+        href: "/products?category=jewelry",
         productCount: 24,
     },
     {
         name: "Keychains",
-        image: "/images/category-keychains.jpg",
-        href: "/collection?category=keychains",
+        image: "/images/category-keychains.jpeg",
+        href: "/products?category=keychains",
         productCount: 18,
     },
     {
         name: "Home Décor",
-        image: "/images/category-decor.jpg",
-        href: "/collection?category=home-decor",
+        image: "/images/category-decor.jpeg",
+        href: "/products?category=home-decor",
         productCount: 12,
     },
     {
         name: "Custom Orders",
-        image: "/images/category-custom.jpg",
+        image: "/images/category-custom.jpeg",
         href: "/contact",
     },
 ];

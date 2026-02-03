@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+// Types for the e-commerce application
 
 // Category Type
 export interface ICategory {
@@ -34,6 +34,8 @@ export interface IProduct {
     lowStockThreshold: number;
     isActive: boolean;
     isDeleted: boolean;
+    isBestSeller: boolean;
+    isLatest: boolean;
     handmadeDisclaimer: string;
     createdAt: string;
     updatedAt: string;
@@ -130,4 +132,6 @@ export interface ProductsQueryParams {
     maxPrice?: number;
     sort?: string;
     order?: 'asc' | 'desc';
+    isBestSeller?: boolean;
+    isLatest?: boolean;
 }

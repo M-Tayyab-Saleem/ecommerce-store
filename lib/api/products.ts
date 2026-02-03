@@ -47,3 +47,41 @@ export async function searchProducts(query: string, params?: ProductsQueryParams
     });
     return response.data;
 }
+
+/**
+ * Fetch best seller products
+ */
+export async function getBestSellerProducts(limit: number = 5): Promise<ApiResponse<IProduct[]>> {
+    const response = await axiosInstance.get('/products', {
+        params: { isBestSeller: 'true', limit },
+    });
+    return response.data;
+}
+
+/**
+ * Fetch latest products
+ */
+export async function getLatestProducts(limit: number = 10): Promise<ApiResponse<IProduct[]>> {
+    const response = await axiosInstance.get('/products', {
+        params: { isLatest: 'true', limit, sort: 'createdAt', order: 'desc' },
+    });
+    return response.data;
+}
+
+/**
+ * Fetch products for homepage (bestsellers and latest combined)
+ */
+export async function getHomePageProducts(): Promise<{
+    bestSellers: IProduct[];
+    latestProducts: IProduct[];
+}> {
+    const [bestSellersRes, latestRes] = await Promise.all([
+        getBestSellerProducts(5),
+        getLatestProducts(10),
+    ]);
+
+    return {
+        bestSellers: bestSellersRes.data || [],
+        latestProducts: latestRes.data || [],
+    };
+}

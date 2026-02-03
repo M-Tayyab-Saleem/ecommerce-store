@@ -6,11 +6,11 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const shopLinks = [
-    { name: "Jewelry", href: "/collection?category=jewelry" },
-    { name: "Keychains", href: "/collection?category=keychains" },
-    { name: "Home Décor", href: "/collection?category=home-decor" },
+    { name: "Jewelry", href: "/products?category=jewelry" },
+    { name: "Keychains", href: "/products?category=keychains" },
+    { name: "Home Décor", href: "/products?category=home-decor" },
     { name: "Custom Orders", href: "/contact" },
-    { name: "All Products", href: "/collection" },
+    { name: "All Products", href: "/products" },
   ];
 
   const companyLinks = [

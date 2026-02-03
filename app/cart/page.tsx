@@ -58,7 +58,7 @@ const Cart = () => {
                     title="Your cart is empty"
                     message="Looks like you haven't added any handmade pieces to your cart yet. Explore our collection!"
                     actionLabel="Start Shopping"
-                    actionHref="/collection"
+                    actionHref="/products"
                 />
             ) : (
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
@@ -198,7 +198,7 @@ const Cart = () => {
 
                         {/* Continue Shopping */}
                         <Link
-                            href="/collection"
+                            href="/products"
                             className="inline-flex items-center gap-2 text-gray-600 hover:text-primary mt-6 transition-colors"
                         >
                             <ArrowLeft size={18} />

@@ -4,23 +4,10 @@ import React from "react";
 import ProductItem from "./ProductItem";
 import SectionHeading from "./SectionHeading";
 import Link from "next/link";
-
-type Product = {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string[];
-  category: string;
-  subCategory: string;
-  sizes: string[];
-  date: number;
-  bestseller: boolean;
-  slug?: string;
-};
+import { IProduct } from "@/types/product";
 
 interface LatestCollectionProps {
-  products: Product[];
+  products: IProduct[];
 }
 
 const LatestCollection: React.FC<LatestCollectionProps> = ({ products }) => {
@@ -37,11 +24,11 @@ const LatestCollection: React.FC<LatestCollectionProps> = ({ products }) => {
 
       {/* Products Grid */}
       <div className="product-grid">
-        {displayProducts.map((item: Product) => (
+        {displayProducts.map((item: IProduct) => (
           <ProductItem
             key={item._id}
             id={item._id}
-            image={item.image}
+            image={item.images}
             price={item.price}
             name={item.name}
             slug={item.slug}
@@ -51,7 +38,7 @@ const LatestCollection: React.FC<LatestCollectionProps> = ({ products }) => {
 
       {/* View All Button */}
       <div className="text-center mt-10">
-        <Link href="/collection" className="btn-outline inline-block">
+        <Link href="/products" className="btn-outline inline-block">
           View All Products
         </Link>
       </div>

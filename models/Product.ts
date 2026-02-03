@@ -20,6 +20,8 @@ export interface IProduct extends Document {
     lowStockThreshold: number;
     isActive: boolean;
     isDeleted: boolean;
+    isBestSeller: boolean;
+    isLatest: boolean;
     handmadeDisclaimer: string;
     createdAt: Date;
     updatedAt: Date;
@@ -111,6 +113,16 @@ const productSchema = new Schema<IProduct>(
         isDeleted: {
             type: Boolean,
             default: false,
+        },
+        isBestSeller: {
+            type: Boolean,
+            default: false,
+            index: true,
+        },
+        isLatest: {
+            type: Boolean,
+            default: true, // New products are marked as latest by default
+            index: true,
         },
         handmadeDisclaimer: {
             type: String,
