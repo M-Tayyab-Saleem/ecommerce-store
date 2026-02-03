@@ -148,6 +148,13 @@ const Navbar = () => {
             </button>
             <div className="absolute top-full right-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
               <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2 min-w-[160px]">
+                {/* TODO: Show only for admin users - will need auth context */}
+                <Link
+                  href="/admin"
+                  className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                >
+                  Admin Dashboard
+                </Link>
                 <Link
                   href="/my-orders"
                   className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
