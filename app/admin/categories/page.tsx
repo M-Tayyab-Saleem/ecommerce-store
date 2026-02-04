@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Search, Edit, Trash2, FolderTree, Image as ImageIcon } from "lucide-react";
+import { Plus, Search, Edit, Trash2, FolderTree } from "lucide-react";
 import AdminCard from "@/components/admin/AdminCard";
 import AdminTable from "@/components/admin/AdminTable";
 import StatusBadge from "@/components/admin/StatusBadge";
@@ -14,10 +14,6 @@ import ConfirmModal from "@/components/ConfirmModal";
 import { ICategory } from "@/models/Category";
 import CategoryModal from "@/components/admin/CategoryModal";
 
-// Extended category with product count
-interface CategoryWithCount extends ICategory {
-    productCount?: number;
-}
 
 export default function CategoriesPage() {
     // State
@@ -93,7 +89,7 @@ export default function CategoriesPage() {
         {
             key: "image",
             header: "Category",
-            render: (category: CategoryWithCount) => (
+            render: (category: ICategory) => (
                 <div className="flex items-center gap-3">
                     <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
                         {category.image ? (
@@ -119,7 +115,7 @@ export default function CategoriesPage() {
         {
             key: "description",
             header: "Description",
-            render: (category: CategoryWithCount) => (
+            render: (category: ICategory) => (
                 <p className="text-sm text-gray-600 line-clamp-2 max-w-xs">
                     {category.description || <span className="text-gray-400 italic">No description</span>}
                 </p>
@@ -128,7 +124,7 @@ export default function CategoriesPage() {
         {
             key: "productCount",
             header: "Products",
-            render: (category: CategoryWithCount) => {
+            render: (category: ICategory) => {
                 const count = productCounts?.[category._id.toString()] || 0;
                 return (
                     <div className="flex items-center gap-2">
@@ -144,7 +140,7 @@ export default function CategoriesPage() {
         {
             key: "status",
             header: "Status",
-            render: (category: CategoryWithCount) => (
+            render: (category: ICategory) => (
                 <StatusBadge
                     status={category.isActive ? "Active" : "Inactive"}
                     type="active"
@@ -155,7 +151,7 @@ export default function CategoriesPage() {
             key: "actions",
             header: "Actions",
             align: "right" as const,
-            render: (category: CategoryWithCount) => (
+            render: (category: ICategory) => (
                 <div className="flex items-center justify-end gap-2">
                     <button
                         onClick={() => handleEdit(category)}

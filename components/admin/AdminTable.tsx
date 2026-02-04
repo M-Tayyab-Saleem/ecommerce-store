@@ -24,7 +24,7 @@ interface AdminTableProps<T> {
     className?: string;
 }
 
-export default function AdminTable<T extends Record<string, unknown>>({
+export default function AdminTable<T>({
     columns,
     data,
     keyField = "_id",

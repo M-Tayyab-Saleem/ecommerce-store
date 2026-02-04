@@ -2,9 +2,9 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import dbConnect from '@/lib/dbConnect';
 import Order from '@/models/Order';
-import Product, { IProduct, IVariant } from '@/models/Product';
+import Product, { IVariant } from '@/models/Product';
 import Payment from '@/models/Payment';
-import { requireAuth, requireAdmin, verifyAuth } from '@/lib/authMiddleware';
+import { requireAuth, requireAdmin } from '@/lib/authMiddleware';
 import { generateOrderId } from '@/utils/generateOrderId';
 import {
     successResponse,
@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
             // Check stock
             if (item.selectedVariant) {
                 const variant = product.variants.find(
-                    (v: IVariant) => v.color === item.selectedVariant
+                    (v: IVariant) => v.designName === item.selectedVariant
                 ) as IVariant | undefined;
                 if (!variant || variant.stock < item.quantity) {
                     return errorResponse(
@@ -235,7 +235,7 @@ export async function POST(request: NextRequest) {
                 if (item.selectedVariant) {
                     // Reduce variant stock
                     await Product.updateOne(
-                        { _id: product._id, 'variants.color': item.selectedVariant },
+                        { _id: product._id, 'variants.designName': item.selectedVariant },
                         { $inc: { 'variants.$.stock': -item.quantity } }
                     );
                 } else {
