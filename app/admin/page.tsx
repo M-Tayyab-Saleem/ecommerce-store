@@ -53,71 +53,72 @@ export default function AdminDashboard() {
         <div className="space-y-6">
             {/* Page Header */}
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-xl font-bold text-gray-900">
                     Welcome to  Admin Dashboard
                 </h2>
-                <p className="text-gray-600 mt-1">
+                <p className="text-gray-600 mt-1 text-sm">
                     Overview of your store performance and quick actions
                 </p>
             </div>
 
+
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="card p-6">
+                <div className="card p-5">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-gray-600 mb-1">Total Orders</p>
-                            <p className="text-3xl font-bold text-gray-900">
+                            <p className="text-xs text-gray-600 mb-1">Total Orders</p>
+                            <p className="text-2xl font-bold text-gray-900">
                                 {stats.overview.totalOrders}
                             </p>
                         </div>
-                        <div className="p-3 bg-blue-100 rounded-lg">
-                            <ShoppingCart className="text-blue-600" size={24} />
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <ShoppingCart className="text-blue-600" size={20} />
                         </div>
                     </div>
-                    <div className="mt-4 flex items-center gap-2 text-sm">
-                        <TrendingUp size={16} className="text-green-600" />
+                    <div className="mt-3 flex items-center gap-2 text-xs">
+                        <TrendingUp size={14} className="text-green-600" />
                         <span className="text-green-600 font-medium">
                             {stats.thisMonth.orders} this month
                         </span>
                     </div>
                 </div>
 
-                <div className="card p-6">
+                <div className="card p-5">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
-                            <p className="text-3xl font-bold text-gray-900">
+                            <p className="text-xs text-gray-600 mb-1">Total Revenue</p>
+                            <p className="text-2xl font-bold text-gray-900">
                                 {formatCurrency(stats.overview.totalRevenue)}
                             </p>
                         </div>
-                        <div className="p-3 bg-green-100 rounded-lg">
-                            <DollarSign className="text-green-600" size={24} />
+                        <div className="p-2 bg-green-100 rounded-lg">
+                            <DollarSign className="text-green-600" size={20} />
                         </div>
                     </div>
-                    <div className="mt-4 flex items-center gap-2 text-sm">
+                    <div className="mt-3 flex items-center gap-2 text-xs">
                         <span className="text-gray-600">
                             {formatCurrency(stats.thisMonth.revenue)} this month
                         </span>
                     </div>
                 </div>
 
-                <div className="card p-6">
+                <div className="card p-5">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-gray-600 mb-1">Total Products</p>
-                            <p className="text-3xl font-bold text-gray-900">
+                            <p className="text-xs text-gray-600 mb-1">Total Products</p>
+                            <p className="text-2xl font-bold text-gray-900">
                                 {stats.overview.totalProducts}
                             </p>
                         </div>
-                        <div className="p-3 bg-purple-100 rounded-lg">
-                            <Package className="text-purple-600" size={24} />
+                        <div className="p-2 bg-purple-100 rounded-lg">
+                            <Package className="text-purple-600" size={20} />
                         </div>
                     </div>
-                    <div className="mt-4 flex items-center gap-2 text-sm">
+                    <div className="mt-3 flex items-center gap-2 text-xs">
                         {stats.alerts.lowStockProducts > 0 && (
                             <>
-                                <AlertTriangle size={16} className="text-yellow-600" />
+                                <AlertTriangle size={14} className="text-yellow-600" />
                                 <span className="text-yellow-600 font-medium">
                                     {stats.alerts.lowStockProducts} low stock
                                 </span>
@@ -126,19 +127,19 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                <div className="card p-6">
+                <div className="card p-5">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-gray-600 mb-1">Pending Payments</p>
-                            <p className="text-3xl font-bold text-gray-900">
+                            <p className="text-xs text-gray-600 mb-1">Pending Payments</p>
+                            <p className="text-2xl font-bold text-gray-900">
                                 {stats.alerts.pendingPayments}
                             </p>
                         </div>
-                        <div className="p-3 bg-yellow-100 rounded-lg">
-                            <CreditCard className="text-yellow-600" size={24} />
+                        <div className="p-2 bg-yellow-100 rounded-lg">
+                            <CreditCard className="text-yellow-600" size={20} />
                         </div>
                     </div>
-                    <div className="mt-4 flex items-center gap-2 text-sm">
+                    <div className="mt-3 flex items-center gap-2 text-xs">
                         <span className="text-gray-600">Require verification</span>
                     </div>
                 </div>

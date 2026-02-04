@@ -11,12 +11,12 @@ interface InstagramPost {
 }
 
 const defaultPosts: InstagramPost[] = [
-    { id: "1", image: "/images/instagram-1.jpg" },
-    { id: "2", image: "/images/instagram-2.jpg" },
-    { id: "3", image: "/images/instagram-3.jpg" },
-    { id: "4", image: "/images/instagram-4.jpg" },
-    { id: "5", image: "/images/instagram-5.jpg" },
-    { id: "6", image: "/images/instagram-6.jpg" },
+    { id: "1", image: "/images/insta-1.png" },
+    { id: "2", image: "/images/insta-2.png" },
+    { id: "3", image: "/images/insta-3.png" },
+    { id: "4", image: "/images/insta-4.png" },
+    { id: "5", image: "/images/insta-5.png" },
+    { id: "6", image: "/images/insta-6.png" },
 ];
 
 interface InstagramGalleryProps {

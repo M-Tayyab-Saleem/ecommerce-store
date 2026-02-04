@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Only protect /admin routes
@@ -17,14 +17,12 @@ export function middleware(request: NextRequest) {
                 return NextResponse.redirect(new URL('/login', request.url));
             }
 
-            // Verify token
-            const decoded = jwt.verify(token, JWT_SECRET!) as {
-                userId: string;
-                role?: string;
-            };
+            // Verify token using jose (Edge compatible)
+            const secret = new TextEncoder().encode(JWT_SECRET);
+            const { payload } = await jwtVerify(token, secret);
 
-            // Token is valid (userId exists in decoded)
-            if (!decoded.userId) {
+            // Token is valid
+            if (!payload.userId) {
                 return NextResponse.redirect(new URL('/login', request.url));
             }
 

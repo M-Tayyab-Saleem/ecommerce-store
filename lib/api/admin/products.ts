@@ -27,6 +27,7 @@ export const useAdminProducts = (filters: ProductFilters) => {
         queryKey: ["admin", "products", filters],
         queryFn: async () => {
             // Build query string
+            // ...
             const params = new URLSearchParams();
             if (filters.page) params.append("page", filters.page.toString());
             if (filters.limit) params.append("limit", filters.limit.toString());
@@ -35,8 +36,20 @@ export const useAdminProducts = (filters: ProductFilters) => {
             if (filters.stockStatus && filters.stockStatus !== "all") params.append("stockStatus", filters.stockStatus);
             if (filters.isActive && filters.isActive !== "all") params.append("isActive", filters.isActive);
 
-            const { data } = await adminClient.get(`/admin/products?${params.toString()}`);
-            return data.data; // Assuming API returns { success: true, data: { products: [], pagination: {} } }
+            // Fetch from correct endpoint /products
+            const { data } = await adminClient.get(`/products?${params.toString()}`);
+
+            // Map API response to component expectation
+            return {
+                products: data.data || [],
+                pagination: data.metadata || {
+                    currentPage: 1,
+                    totalPages: 1,
+                    totalProducts: 0,
+                    hasNextPage: false,
+                    hasPrevPage: false
+                }
+            };
         },
         placeholderData: keepPreviousData,
     });
@@ -46,7 +59,7 @@ export const useDeleteProduct = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (id: string) => {
-            await adminClient.delete(`/admin/products/${id}`);
+            await adminClient.delete(`/products/${id}`);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["admin", "products"] });

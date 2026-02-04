@@ -6,7 +6,7 @@ import { X, AlertTriangle } from "lucide-react";
 interface ConfirmModalProps {
     isOpen: boolean;
     title: string;
-    message: string;
+    message: React.ReactNode;
     onConfirm: () => void;
     onCancel: () => void;
     variant?: "danger" | "warning" | "info";
@@ -74,7 +74,7 @@ export default function ConfirmModal({
                     </div>
 
                     {/* Message */}
-                    <p className="text-gray-600 mb-6">{message}</p>
+                    <div className="text-gray-600 mb-6">{message}</div>
 
                     {/* Actions */}
                     <div className="flex items-center justify-end gap-3">

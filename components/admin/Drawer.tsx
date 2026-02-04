@@ -9,7 +9,16 @@ interface DrawerProps {
     title: string;
     children: React.ReactNode;
     position?: "left" | "right";
+    size?: "sm" | "md" | "lg" | "xl" | "full";
 }
+
+const sizeClasses = {
+    sm: "max-w-sm",
+    md: "max-w-md",
+    lg: "max-w-2xl",
+    xl: "max-w-4xl",
+    full: "max-w-full",
+};
 
 export default function Drawer({
     isOpen,
@@ -17,6 +26,7 @@ export default function Drawer({
     title,
     children,
     position = "right",
+    size = "md",
 }: DrawerProps) {
     if (!isOpen) return null;
 
@@ -36,7 +46,7 @@ export default function Drawer({
             {/* Drawer */}
             <div
                 data-open={isOpen}
-                className={`fixed top-0 bottom-0 ${positionClasses} w-full max-w-md bg-white shadow-xl z-50 transition-transform duration-300 ease-in-out flex flex-col`}
+                className={`fixed top-0 bottom-0 ${positionClasses} w-full ${sizeClasses[size]} bg-white shadow-xl z-50 transition-transform duration-300 ease-in-out flex flex-col`}
             >
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
@@ -55,3 +65,4 @@ export default function Drawer({
         </>
     );
 }
+

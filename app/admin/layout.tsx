@@ -157,9 +157,7 @@ export default function AdminLayout({
         return pathname.startsWith(href);
     };
 
-    // Get current page title
-    const currentPage =
-        navLinks.find((link) => isActive(link.href))?.name || "Dashboard";
+
 
     return (
         <ToastProvider>
@@ -191,30 +189,15 @@ export default function AdminLayout({
 
                 {/* Main Content */}
                 <div className="lg:pl-64">
-                    {/* Top Bar */}
-                    <header className="sticky top-0 z-30 bg-white border-b border-gray-200 h-16">
-                        <div className="flex items-center justify-between h-full px-4 sm:px-6 lg:px-8">
-                            <div className="flex items-center gap-4">
-                                {/* Mobile Menu Button */}
-                                <button
-                                    onClick={() => setSidebarOpen(true)}
-                                    className="p-2 text-gray-500 hover:text-gray-700 lg:hidden"
-                                >
-                                    <Menu size={24} />
-                                </button>
-                                <h1 className="text-xl font-semibold text-gray-900">
-                                    {currentPage}
-                                </h1>
-                            </div>
-
-                            {/* Admin Badge */}
-                            <div className="flex items-center gap-3">
-                                <div className="hidden sm:block">
-                                    <span className="badge badge-primary">Admin</span>
-                                </div>
-                            </div>
-                        </div>
-                    </header>
+                    {/* Mobile Menu Toggle */}
+                    <div className="lg:hidden p-4 pb-0">
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="p-2 text-gray-500 hover:text-gray-700 bg-white rounded-md shadow-sm border border-gray-200"
+                        >
+                            <Menu size={24} />
+                        </button>
+                    </div>
 
                     {/* Page Content */}
                     <main className="p-4 sm:p-6 lg:p-8">{children}</main>

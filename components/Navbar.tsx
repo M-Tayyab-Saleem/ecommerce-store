@@ -4,7 +4,8 @@ import React, { useState, useEffect, useContext } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ShopContext, ShopContextType } from "@/context/ShopContext";
-import { Menu, X, Search, User, ShoppingBag, ChevronDown } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Menu, X, Search, User, ShoppingBag, ChevronDown, LogOut } from "lucide-react";
 
 interface NavLink {
   name: string;
@@ -36,6 +37,7 @@ const Navbar = () => {
   const { setShowSearch, showSearch, getCartTotalItems } = useContext(
     ShopContext
   ) as ShopContextType;
+  const { user, logout } = useAuth();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -148,25 +150,35 @@ const Navbar = () => {
             </button>
             <div className="absolute top-full right-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
               <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2 min-w-[160px]">
-                {/* TODO: Show only for admin users - will need auth context */}
-                <Link
-                  href="/admin"
-                  className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
-                >
-                  Admin Dashboard
-                </Link>
+                {user?.role === 'admin' && (
+                  <Link
+                    href="/admin"
+                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
                 <Link
                   href="/my-orders"
                   className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
                 >
                   My Orders
                 </Link>
-                <Link
-                  href="/login"
-                  className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
-                >
-                  Login / Register
-                </Link>
+                {user ? (
+                  <button
+                    onClick={logout}
+                    className="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                  >
+                    Login / Register
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -272,13 +284,25 @@ const Navbar = () => {
 
           {/* Footer */}
           <div className="p-4 border-t">
-            <Link
-              href="/login"
-              className="btn-primary w-full text-center block"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Login / Register
-            </Link>
+            {user ? (
+              <button
+                onClick={() => {
+                  logout();
+                  setMobileMenuOpen(false);
+                }}
+                className="btn-primary w-full text-center flex justify-center items-center gap-2"
+              >
+                <LogOut size={18} /> Logout
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="btn-primary w-full text-center block"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Login / Register
+              </Link>
+            )}
           </div>
         </div>
       </div>

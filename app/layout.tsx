@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import LayoutWrapper from "@/components/LayoutWrapper";
 import ShopContextProvider from "@/context/ShopContext";
 import Providers from "./providers";
 import { generateOrganizationJsonLd } from "@/utils/seo";
@@ -73,13 +72,9 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <Providers>
           <ShopContextProvider>
-            <div className="flex flex-col min-h-screen">
-              <Navbar />
-              <main className="flex-grow">
-                {children}
-              </main>
-              <Footer />
-            </div>
+            <LayoutWrapper>
+              {children}
+            </LayoutWrapper>
           </ShopContextProvider>
         </Providers>
       </body>
