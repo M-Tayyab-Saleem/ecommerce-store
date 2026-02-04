@@ -46,7 +46,7 @@ const Contact = () => {
             </h1>
             <p className="text-lg text-gray-600">
               Have questions about our products or want to place a custom order?
-              We'd love to hear from you!
+              We&apos;d love to hear from you!
             </p>
           </div>
         </div>
@@ -71,7 +71,7 @@ const Contact = () => {
                     Message Sent!
                   </h3>
                   <p className="text-green-700 mb-4">
-                    Thank you for reaching out. We'll get back to you within 24 hours.
+                    Thank you for reaching out. We&apos;ll get back to you within 24 hours.
                   </p>
                   <button
                     onClick={() => setStatus("idle")}

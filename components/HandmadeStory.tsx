@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import SectionHeading from "./SectionHeading";
+// SectionHeading removed as unused
 
 const HandmadeStory: React.FC = () => {
     return (
@@ -44,11 +44,11 @@ const HandmadeStory: React.FC = () => {
                             <p>
                                 We pour our hearts into each creation — from selecting the perfect pigments
                                 to carefully curing each piece to perfection. No two pieces are exactly alike,
-                                and that's the beauty of handmade art.
+                                and that&apos;s the beauty of handmade art.
                             </p>
                             <p className="font-medium text-gray-800">
-                                When you choose EpoxySista, you're not just buying a product — you're
-                                supporting local artistry and taking home a piece of someone's passion.
+                                When you choose EpoxySista, you&apos;re not just buying a product — you&apos;re
+                                supporting local artistry and taking home a piece of someone&apos;s passion.
                             </p>
                         </div>
 

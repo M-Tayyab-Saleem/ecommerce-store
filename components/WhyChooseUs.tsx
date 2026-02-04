@@ -9,7 +9,7 @@ const WhyChooseUs: React.FC = () => {
                 <SectionHeading
                     label="Why EpoxySista?"
                     title="What Makes Us Different"
-                    subtitle="We're committed to quality, convenience, and your satisfaction"
+                    subtitle="We&apos;re committed to quality, convenience, and your satisfaction"
                 />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -23,7 +23,7 @@ const WhyChooseUs: React.FC = () => {
                 <div className="mt-12 text-center">
                     <p className="text-gray-600 max-w-2xl mx-auto">
                         Every purchase supports local artisans and small business in Pakistan.
-                        We take pride in delivering quality pieces that you'll treasure for years.
+                        We take pride in delivering quality pieces that you&apos;ll treasure for years.
                     </p>
                 </div>
             </div>

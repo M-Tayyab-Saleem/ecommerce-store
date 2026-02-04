@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useContext, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ShopContext, ShopContextType } from "@/context/ShopContext";
 import { useAuth } from "@/context/AuthContext";
@@ -68,8 +69,11 @@ const Navbar = () => {
 
   // Close mobile menu on route change
   useEffect(() => {
-    setMobileMenuOpen(false);
-    setActiveDropdown(null);
+    const timer = setTimeout(() => {
+      setMobileMenuOpen(false);
+      setActiveDropdown(null);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   const toggleDropdown = (name: string) => {
@@ -78,16 +82,12 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-3" : "bg-white/95 backdrop-blur-sm py-4"
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-white/95 backdrop-blur-sm py-4"
         }`}
     >
       <div className="container-custom flex items-center justify-between">
-        {/* Logo */}
-        <Link
-          href="/"
-          className="text-2xl font-bold tracking-wide text-primary"
-        >
-          EpoxySista
+        <Link href="/" className="relative block w-32 md:w-40">
+          <Image src="/images/logo.png" alt="EpoxySista" width={160} height={50} className="w-full h-auto object-contain" priority />
         </Link>
 
         {/* Desktop Navigation */}

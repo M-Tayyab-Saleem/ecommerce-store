@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { ShopContext } from "@/context/ShopContext";
 import { assets } from "@/lib/assets";
 import { usePathname } from "next/navigation"; // The Next.js replacement
@@ -8,21 +8,12 @@ import Image from "next/image";
 
 const SearchBar = () => {
   const context = useContext(ShopContext);
-  const [visible, setVisible] = useState(false);
-  const pathname = usePathname(); // Get current path
+  const pathname = usePathname();
+  const visible = pathname.includes("collection");
 
   // Guard clause for TS
   if (!context) return null;
   const { search, setSearch, showSearch, setShowSearch } = context;
-
-  useEffect(() => {
-    // Logic remains mostly the same, just using pathname string
-    if (pathname.includes("collection")) {
-      setVisible(true);
-    } else {
-      setVisible(false);
-    }
-  }, [pathname]);
 
   if (!showSearch || !visible) return null;
 
@@ -38,11 +29,11 @@ const SearchBar = () => {
         />
         <Image src={assets.search_icon} alt="search" className="w-4" />
       </div>
-      <Image 
-        src={assets.cross_icon} 
-        alt="close" 
-        onClick={() => setShowSearch(false)} 
-        className="inline w-3 cursor-pointer" 
+      <Image
+        src={assets.cross_icon}
+        alt="close"
+        onClick={() => setShowSearch(false)}
+        className="inline w-3 cursor-pointer"
       />
     </div>
   );

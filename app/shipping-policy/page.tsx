@@ -92,7 +92,7 @@ export default function ShippingPolicyPage() {
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">Questions?</h2>
                         <p className="text-gray-700 leading-relaxed">
                             If you have any questions about shipping, please <Link href="/contact" className="text-primary hover:underline">contact us</Link> and
-                            we'll be happy to help!
+                            we&apos;ll be happy to help!
                         </p>
                     </section>
                 </div>

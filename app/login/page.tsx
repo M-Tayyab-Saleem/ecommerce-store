@@ -55,14 +55,19 @@ const Login = () => {
       }
 
       // Redirect or cleanup handled by AuthContext/UseEffect
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (typeof err === 'string') {
         setError(err);
-      } else if (err.message) {
+      } else if (err instanceof Error) {
         setError(err.message);
       } else if (Array.isArray(err)) {
         // Handle array of validation errors (zod style from backend)
-        setError(err[0]?.message || "An error occurred");
+        const firstError = err[0];
+        if (firstError?.message) {
+          setError(firstError.message);
+        } else {
+          setError("An error occurred");
+        }
       } else {
         setError("An unexpected error occurred");
       }
@@ -179,7 +184,7 @@ const Login = () => {
         <p className="mt-6 text-sm text-gray-600 text-center">
           {state === "Login" ? (
             <>
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <span
                 onClick={() => toggleState("Sign Up")}
                 className="font-semibold text-black cursor-pointer hover:underline"

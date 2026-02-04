@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
@@ -23,7 +24,7 @@ interface AdminTableProps<T> {
     className?: string;
 }
 
-export default function AdminTable<T extends Record<string, any>>({
+export default function AdminTable<T extends Record<string, unknown>>({
     columns,
     data,
     keyField = "_id",
@@ -48,10 +49,13 @@ export default function AdminTable<T extends Record<string, any>>({
     const sortedData = React.useMemo(() => {
         if (!sortConfig) return data;
         return [...data].sort((a, b) => {
-            if (a[sortConfig.key] < b[sortConfig.key]) {
+            const aValue = (a as any)[sortConfig.key];
+            const bValue = (b as any)[sortConfig.key];
+
+            if (aValue < bValue) {
                 return sortConfig.direction === "asc" ? -1 : 1;
             }
-            if (a[sortConfig.key] > b[sortConfig.key]) {
+            if (aValue > bValue) {
                 return sortConfig.direction === "asc" ? 1 : -1;
             }
             return 0;
@@ -109,17 +113,17 @@ export default function AdminTable<T extends Record<string, any>>({
                 <tbody className="divide-y divide-gray-100">
                     {sortedData.map((item, index) => (
                         <tr
-                            key={item[keyField] || index}
+                            key={((item as any)[keyField] as string) || index}
                             className={`hover:bg-gray-50 transition-colors ${onRowClick ? "cursor-pointer" : ""}`}
                             onClick={() => onRowClick && onRowClick(item)}
                         >
                             {columns.map((col) => (
                                 <td
-                                    key={`${item[keyField]}-${col.key}`}
+                                    key={`${(item as any)[keyField]}-${col.key}`}
                                     className={`px-6 py-4 whitespace-nowrap ${col.align === "right" ? "text-right" : col.align === "center" ? "text-center" : "text-left"
                                         } ${col.className || ""}`}
                                 >
-                                    {col.render ? col.render(item) : item[col.key]}
+                                    {col.render ? col.render(item) : ((item as any)[col.key] as React.ReactNode)}
                                 </td>
                             ))}
                         </tr>

@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import ShopContextProvider from "@/context/ShopContext";
 import Providers from "./providers";
 import { generateOrganizationJsonLd } from "@/utils/seo";
 
-const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-poppins'
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://epoxysista.com'),
@@ -69,7 +73,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${poppins.variable} font-sans antialiased`}>
         <Providers>
           <ShopContextProvider>
             <LayoutWrapper>

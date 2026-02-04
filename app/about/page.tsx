@@ -68,10 +68,10 @@ const About = () => {
                   Every piece you see here is made with love, right here in Pakistan.
                   From selecting the perfect pigments to carefully pouring and curing
                   each creation, I pour my heart into every step of the process.
-                  No two pieces are exactly alike — and that's the magic of handmade art.
+                  No two pieces are exactly alike — and that&apos;s the magic of handmade art.
                 </p>
                 <p className="font-medium text-gray-800">
-                  When you choose EpoxySista, you're not just buying a product. You're
+                  When you choose EpoxySista, you&apos;re not just buying a product. You&apos;re
                   supporting a dream, celebrating handmade artistry, and taking home a
                   piece that was crafted just for you.
                 </p>
@@ -113,7 +113,7 @@ const About = () => {
         <div className="container-custom">
           <div className="text-center mb-12">
             <span className="text-xs font-semibold tracking-[0.2em] uppercase text-primary mb-2 block">
-              How It's Made
+              How It&apos;s Made
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               The Craft Behind Each Piece

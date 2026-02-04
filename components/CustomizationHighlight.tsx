@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import SectionHeading from "./SectionHeading";
+// SectionHeading removed as unused
 
 const CustomizationHighlight: React.FC = () => {
     const customOptions = [
@@ -33,7 +33,7 @@ const CustomizationHighlight: React.FC = () => {
                         Custom Resin Creations
                     </h2>
                     <p className="text-gray-600 max-w-2xl mx-auto">
-                        Can't find exactly what you're looking for? We love creating custom pieces!
+                        Can&apos;t find exactly what you&apos;re looking for? We love creating custom pieces!
                         From personalized keychains with names to jewelry in your favorite colors.
                     </p>
                 </div>
@@ -67,7 +67,7 @@ const CustomizationHighlight: React.FC = () => {
                         Have a Custom Design in Mind?
                     </h3>
                     <p className="text-gray-600 mb-6">
-                        Send us your ideas on WhatsApp and let's create something special together.
+                        Send us your ideas on WhatsApp and let&apos;s create something special together.
                         Custom orders typically take 5-7 days to craft.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">

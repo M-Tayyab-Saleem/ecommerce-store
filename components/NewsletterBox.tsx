@@ -1,7 +1,7 @@
 "use client";
 
+// SectionHeading removed as unused
 import React, { useState } from "react";
-import SectionHeading from "./SectionHeading";
 
 const NewsletterBox: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -64,7 +64,7 @@ const NewsletterBox: React.FC = () => {
 
                     {status === "success" && (
                         <p className="text-green-600 text-sm mt-4">
-                            Thank you for subscribing! We'll keep you updated.
+                            Thank you for subscribing! We&apos;ll keep you updated.
                         </p>
                     )}
 

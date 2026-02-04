@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import dbConnect from '@/lib/dbConnect';
+import Category from '@/models/Category';
+void Category; // Ensure Category is registered
 import Product from '@/models/Product';
-import Category from '@/models/Category'; // Ensure Category is registered
 import { requireAdmin, verifyAuth } from '@/lib/authMiddleware';
 import {
     successResponse,

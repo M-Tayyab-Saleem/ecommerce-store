@@ -113,9 +113,9 @@ export default function RefundPolicyPage() {
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                             <h3 className="text-lg font-semibold text-blue-900 mb-2">Questions?</h3>
                             <p className="text-blue-800">
-                                If you have any questions about our refund policy, please don't hesitate to{' '}
+                                If you have any questions about our refund policy, please don&apos;t hesitate to{' '}
                                 <Link href="/contact" className="text-primary hover:underline font-semibold">contact us</Link>.
-                                We're here to help!
+                                We&apos;re here to help!
                             </p>
                         </div>
                     </section>

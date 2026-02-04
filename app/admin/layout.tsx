@@ -20,6 +20,7 @@ import {
     ExternalLink,
 } from "lucide-react";
 import { ToastProvider } from "@/components/Toast";
+import Image from "next/image";
 
 interface NavLink {
     name: string;
@@ -70,13 +71,13 @@ const Sidebar = ({
         >
             <div className="flex flex-col h-full">
                 {/* Logo/Brand */}
-                <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+                <div className="flex items-center justify-between h-18 px-6 border-b border-gray-200">
                     <Link
                         href="/admin"
                         className="text-xl font-bold text-primary"
                         onClick={() => mobile && setSidebarOpen(false)}
                     >
-                        EpoxySista Admin
+          <Image src="/images/logo.png" alt="EpoxySista" width={120} height={50} className="w-full h-auto object-contain" priority />
                     </Link>
                     {mobile && (
                         <button
@@ -115,7 +116,7 @@ const Sidebar = ({
                 </nav>
 
                 {/* View Website Link */}
-                <div className="px-4 pb-2">
+                <div className="px-2 pb-2">
                     <Link
                         href="/"
                         target="_blank"
@@ -127,7 +128,7 @@ const Sidebar = ({
                 </div>
 
                 {/* Admin Profile & Logout */}
-                <div className="p-4 border-t border-gray-200">
+                <div className="p-0 border-t border-gray-200">
                     <button
                         onClick={handleLogout}
                         className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors"

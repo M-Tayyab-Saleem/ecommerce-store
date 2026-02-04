@@ -5,10 +5,7 @@ import Link from "next/link";
 import { ChevronDown, MessageCircle } from "lucide-react";
 import WhatsAppCTA from "@/components/WhatsAppCTA";
 
-interface FAQItem {
-    question: string;
-    answer: string;
-}
+// interface FAQItem removed as unused
 
 const faqCategories = [
     {
@@ -17,7 +14,7 @@ const faqCategories = [
             {
                 question: "What is resin jewelry?",
                 answer:
-                    "Resin jewelry is made from epoxy resin, a durable plastic material that starts as a liquid and hardens when cured. It's perfect for embedding flowers, glitter, pigments, and other decorative elements to create unique, one-of-a-kind pieces.",
+                    "Resin jewelry is made from epoxy resin, a durable plastic material that starts as a liquid and hardens when cured. It&apos;s perfect for embedding flowers, glitter, pigments, and other decorative elements to create unique, one-of-a-kind pieces.",
             },
             {
                 question: "Is resin jewelry durable?",
@@ -194,10 +191,10 @@ const FAQPage = () => {
                             Still Have Questions?
                         </h3>
                         <p className="text-gray-600 mb-6">
-                            Can't find what you're looking for? We're here to help!
+                            Can&apos;t find what you&apos;re looking for? We&apos;re here to help!
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <WhatsAppCTA message="Hi! I have a question that's not in the FAQs." />
+                            <WhatsAppCTA message="Hi! I have a question that&apos;s not in the FAQs." />
                             <Link href="/contact" className="btn-outline">
                                 Contact Page
                             </Link>

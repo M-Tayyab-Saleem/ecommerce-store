@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
+import './Category'; // Ensure Category model is registered
 
 // Design-based variant structure
 // Each design has its own images, optional price, and stock

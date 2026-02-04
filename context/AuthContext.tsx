@@ -74,8 +74,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setUser(response.data.data.user);
             }
             return response.data;
-        } catch (error: any) {
-            throw error.response?.data?.message || "Login failed";
+        } catch (error: unknown) {
+            if (typeof error === "object" && error !== null && "response" in error) {
+                // specific check for axios-like error object structure
+                const err = error as { response: { data: { message: string } } };
+                throw err.response?.data?.message || "Login failed";
+            }
+            throw "Login failed";
         }
     };
 
@@ -86,9 +91,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setUser(response.data.data.user);
             }
             return response.data;
-        } catch (error: any) {
-            const message = error.response?.data?.message || "Registration failed";
-            throw error.response?.data || { message };
+        } catch (error: unknown) {
+            let message = "Registration failed";
+            let errorData = { message };
+            if (typeof error === "object" && error !== null && "response" in error) {
+                const err = error as { response: { data: { message: string } } };
+                message = err.response?.data?.message || message;
+                errorData = (err.response?.data as { message: string }) || errorData;
+            }
+            throw errorData;
         }
     };
 
@@ -98,7 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUser(null);
             router.push("/login"); // Redirect to login page
             router.refresh();
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Logout failed", error);
         }
     };

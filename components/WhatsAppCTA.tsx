@@ -41,7 +41,7 @@ const WhatsAppCTA: React.FC<WhatsAppCTAProps> = ({
                     <div className="flex items-center gap-2">
                         <MessageCircle size={24} />
                         <span className="font-medium">
-                            Have a custom design in mind? Let's create it together!
+                            Have a custom design in mind? Let&apos;s create it together!
                         </span>
                     </div>
                     <Link
