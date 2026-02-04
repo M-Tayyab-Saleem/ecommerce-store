@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import dbConnect from '@/lib/dbConnect';
 import Product from '@/models/Product';
+import Category from '@/models/Category'; // Ensure Category is registered
 import { requireAdmin, verifyAuth } from '@/lib/authMiddleware';
 import {
     successResponse,
@@ -34,10 +35,13 @@ const productSchema = z.object({
         .string()
         .max(500, 'Customization note cannot exceed 500 characters')
         .optional(),
+    // Design-based variants: each has own images, optional price, and stock
     variants: z
         .array(
             z.object({
-                color: z.string().min(1, 'Color is required'),
+                designName: z.string().min(1, 'Design name is required'),
+                images: z.array(z.string().url('Invalid image URL')).default([]),
+                price: z.number().min(0, 'Price cannot be negative').optional(),
                 stock: z.number().min(0, 'Stock cannot be negative'),
             })
         )

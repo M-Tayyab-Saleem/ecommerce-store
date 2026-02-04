@@ -17,8 +17,9 @@ import {
     LogOut,
     ChevronRight,
     Warehouse,
+    ExternalLink,
 } from "lucide-react";
-import { ToastProvider } from "@/components/admin/Toast";
+import { ToastProvider } from "@/components/Toast";
 
 interface NavLink {
     name: string;
@@ -112,6 +113,18 @@ const Sidebar = ({
                         })}
                     </ul>
                 </nav>
+
+                {/* View Website Link */}
+                <div className="px-4 pb-2">
+                    <Link
+                        href="/"
+                        target="_blank"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors font-medium border border-gray-200"
+                    >
+                        <ExternalLink size={20} />
+                        <span>View Website</span>
+                    </Link>
+                </div>
 
                 {/* Admin Profile & Logout */}
                 <div className="p-4 border-t border-gray-200">

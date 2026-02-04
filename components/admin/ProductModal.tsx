@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2, Loader2, Image as ImageIcon, Settings, Package, Tag, Info } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import adminClient from "@/lib/api/admin/axios-instance";
-import { useToast } from "@/components/admin/Toast";
+import { useToast } from "@/components/Toast";
 import ImageUploader from "@/components/admin/ImageUploader";
 import { IProduct } from "@/models/Product";
 import Drawer from "@/components/admin/Drawer";
@@ -27,8 +27,11 @@ const productSchema = z.object({
     customizable: z.boolean().default(false),
     customizationNote: z.string().optional(),
     handmadeDisclaimer: z.string().optional(),
+    // Design-based variants
     variants: z.array(z.object({
-        color: z.string().min(1, "Color is required"),
+        designName: z.string().min(1, "Design name is required"),
+        images: z.array(z.string()).default([]),
+        price: z.coerce.number().min(0, "Price cannot be negative").optional(),
         stock: z.coerce.number().min(0, "Stock cannot be negative"),
     })).optional(),
 });
@@ -359,7 +362,7 @@ export default function ProductModal({
                             </div>
                             <button
                                 type="button"
-                                onClick={() => append({ color: "", stock: 0 })}
+                                onClick={() => append({ designName: "", images: [], stock: 0 })}
                                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
                             >
                                 <Plus size={16} />
@@ -373,36 +376,50 @@ export default function ProductModal({
                                     {fields.map((field, index) => (
                                         <div
                                             key={field.id}
-                                            className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200"
+                                            className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4"
                                         >
-                                            <div className="flex-1">
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Variant Name
-                                                </label>
-                                                <input
-                                                    {...register(`variants.${index}.color`)}
-                                                    placeholder="e.g. Red, Large, Wooden"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                                                />
-                                                {errors.variants?.[index]?.color && (
-                                                    <p className="mt-1 text-sm text-red-600">
-                                                        {errors.variants[index]?.color?.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="w-full sm:w-32">
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Stock
-                                                </label>
-                                                <input
-                                                    type="number"
-                                                    {...register(`variants.${index}.stock`)}
-                                                    placeholder="0"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                                                    min="0"
-                                                />
-                                            </div>
-                                            <div className="flex items-end">
+                                            <div className="flex justify-between items-start gap-4">
+                                                <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                    <div className="sm:col-span-1">
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                            Design Name *
+                                                        </label>
+                                                        <input
+                                                            {...register(`variants.${index}.designName`)}
+                                                            placeholder="e.g. Ocean Blue"
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                                                        />
+                                                        {errors.variants?.[index]?.designName && (
+                                                            <p className="mt-1 text-sm text-red-600">
+                                                                {errors.variants[index]?.designName?.message}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                            Stock *
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            {...register(`variants.${index}.stock`)}
+                                                            placeholder="0"
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                                                            min="0"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                            Price (PKR)
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            {...register(`variants.${index}.price`)}
+                                                            placeholder="Optional"
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                                                            min="0"
+                                                        />
+                                                    </div>
+                                                </div>
                                                 <button
                                                     type="button"
                                                     onClick={() => remove(index)}
@@ -412,15 +429,33 @@ export default function ProductModal({
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    Variant Images
+                                                </label>
+                                                <Controller
+                                                    control={control}
+                                                    name={`variants.${index}.images`}
+                                                    render={({ field: { onChange, value } }) => (
+                                                        <ImageUploader
+                                                            value={value || []}
+                                                            onChange={onChange}
+                                                            maxImages={5}
+                                                            folder="resin-jewelry/variants"
+                                                        />
+                                                    )}
+                                                />
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
                                 <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
                                     <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                                    <p className="text-gray-500">No variants added yet</p>
+                                    <p className="text-gray-500">No design variants added yet</p>
                                     <p className="text-sm text-gray-400 mt-1">
-                                        Add color or size variations for your product
+                                        Add design variations with unique images and pricing
                                     </p>
                                 </div>
                             )}
@@ -475,7 +510,7 @@ export default function ProductModal({
                                     />
                                     <div>
                                         <span className="font-medium text-gray-900">Mark as New</span>
-                                        <p className="text-sm text-gray-500 mt-1">Show "New" badge on product</p>
+                                        <p className="text-sm text-gray-500 mt-1">Show &quot;New&quot; badge on product</p>
                                     </div>
                                 </label>
 

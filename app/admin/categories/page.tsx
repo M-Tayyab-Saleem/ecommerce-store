@@ -9,8 +9,8 @@ import { useAdminCategories, useDeleteCategory } from "@/lib/api/admin/categorie
 import { useQuery } from "@tanstack/react-query";
 import adminClient from "@/lib/api/admin/axios-instance";
 import Image from "next/image";
-import { useToast } from "@/components/admin/Toast";
-import ConfirmModal from "@/components/admin/ConfirmModal";
+import { useToast } from "@/components/Toast";
+import ConfirmModal from "@/components/ConfirmModal";
 import { ICategory } from "@/models/Category";
 import CategoryModal from "@/components/admin/CategoryModal";
 

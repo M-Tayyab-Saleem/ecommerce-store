@@ -12,7 +12,7 @@ import {
     Info
 } from "lucide-react";
 import AdminCard from "@/components/admin/AdminCard";
-import { useToast } from "@/components/admin/Toast";
+import { useToast } from "@/components/Toast";
 
 // Note: In a real app, these would be fetched from/saved to a settings API
 // For now, we'll use local state with realistic defaults
@@ -29,9 +29,9 @@ interface StoreSettings {
 }
 
 const defaultSettings: StoreSettings = {
-    storeName: "Resin Art by Noor",
-    storeEmail: "hello@resinartbynoor.pk",
-    whatsappNumber: "+923001234567",
+    storeName: "Epoxy Sista",
+    storeEmail: "epoxysista@gmail.com",
+    whatsappNumber: "+923022828770",
     enableCOD: true,
     freeShippingThreshold: 3000,
     flatShippingRate: 200,

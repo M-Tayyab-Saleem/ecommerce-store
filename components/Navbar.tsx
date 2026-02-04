@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ShopContext, ShopContextType } from "@/context/ShopContext";
@@ -34,6 +34,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const { setShowSearch, showSearch, getCartTotalItems } = useContext(
     ShopContext
   ) as ShopContextType;
@@ -47,6 +48,23 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+      }
+    };
+
+    if (activeDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [activeDropdown]);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -75,9 +93,12 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <ul className="hidden lg:flex items-center gap-8">
           {navLinks.map((link) => (
-            <li key={link.name} className="relative group">
+            <li
+              key={link.name}
+              className="relative group"
+            >
               {link.dropdown ? (
-                <>
+                <div ref={dropdownRef}>
                   <button
                     className={`flex items-center gap-1 py-2 font-medium transition-colors hover:text-primary ${pathname.startsWith("/products?category")
                       ? "text-primary"
@@ -113,7 +134,7 @@ const Navbar = () => {
                       ))}
                     </div>
                   </div>
-                </>
+                </div>
               ) : (
                 <Link
                   href={link.href}

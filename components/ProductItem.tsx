@@ -4,8 +4,11 @@ import React, { useContext, useState } from "react";
 import { ShopContext, ShopContextType } from "@/context/ShopContext";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingBag, Heart } from "lucide-react";
+import { ShoppingBag, Loader2 } from "lucide-react";
 import { formatPKR } from "@/utils/format";
+import { useToast } from "@/components/Toast";
+
+import { IVariant } from "@/types/product";
 
 interface ProductItemProps {
   id: string;
@@ -15,6 +18,7 @@ interface ProductItemProps {
   slug?: string;
   bestseller?: boolean;
   customizable?: boolean;
+  variants?: IVariant[];
 }
 
 const ProductItem: React.FC<ProductItemProps> = ({
@@ -25,19 +29,43 @@ const ProductItem: React.FC<ProductItemProps> = ({
   slug,
   bestseller = false,
   customizable = false,
+  variants = [],
 }) => {
   const { addToCart } = useContext(ShopContext) as ShopContextType;
+  const { showToast } = useToast();
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Calculate lowest price from variants if available
+  let displayPrice = price;
+  if (variants && variants.length > 0) {
+    const variantPrices = variants
+      .map((v) => v.price)
+      .filter((p): p is number => p !== undefined && p > 0);
+    if (variantPrices.length > 0) {
+      const minVariantPrice = Math.min(...variantPrices);
+      if (minVariantPrice < price) {
+        displayPrice = minVariantPrice;
+      }
+    }
+  }
 
   const productUrl = slug ? `/products/${slug}` : `/product/${id}`;
   const imageUrl = image?.[0] || "/images/placeholder.jpg";
   const hoverImageUrl = image?.[1] || imageUrl;
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsLoading(true);
+
+    // Simulate a brief delay for better UX
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     addToCart(id, "default");
+    showToast("success", "Item added to cart!");
+    setIsLoading(false);
   };
 
   return (
@@ -79,24 +107,21 @@ const ProductItem: React.FC<ProductItemProps> = ({
           )}
         </div>
 
-        {/* Quick Actions */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <button
-            className="w-9 h-9 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-100 transition-colors"
-            aria-label="Add to wishlist"
-          >
-            <Heart size={18} className="text-gray-600" />
-          </button>
-        </div>
-
         {/* Add to Cart Button */}
         <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
           <button
             onClick={handleAddToCart}
-            className="w-full bg-white text-gray-900 font-medium py-2.5 rounded-lg shadow-md hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2"
+            disabled={isLoading}
+            className="w-full bg-white text-gray-900 font-medium py-2.5 rounded-lg shadow-md hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
           >
-            <ShoppingBag size={16} />
-            <span className="text-sm">Add to Cart</span>
+            {isLoading ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <>
+                <ShoppingBag size={16} />
+                <span className="text-sm">Add to Cart</span>
+              </>
+            )}
           </button>
         </div>
       </Link>
@@ -109,7 +134,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
           </h3>
         </Link>
         <div className="mt-1.5 flex items-center justify-between">
-          <span className="font-bold text-gray-900">{formatPKR(price)}</span>
+          <span className="font-bold text-gray-900">{formatPKR(displayPrice)}</span>
           {/* Handmade indicator */}
           <span className="text-xs text-gray-500 flex items-center gap-1">
             ✨ Handmade

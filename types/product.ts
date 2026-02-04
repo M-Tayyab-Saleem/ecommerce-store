@@ -12,10 +12,13 @@ export interface ICategory {
     updatedAt: string;
 }
 
-// Product Variant Type
+// Product Variant Type (Design-based)
+// Each design has its own images, optional price override, and stock
 export interface IVariant {
-    color: string;
-    stock: number;
+    designName: string;      // e.g., "Ocean Blue", "Sunset Glow"
+    images: string[];        // Design-specific images
+    price?: number;          // Optional price override (uses product.price if not set)
+    stock: number;           // Per-design stock
 }
 
 // Product Type

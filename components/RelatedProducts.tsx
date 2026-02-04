@@ -79,6 +79,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ categoryId, currentPr
             price={item.price}
             name={item.name}
             slug={item.slug}
+            variants={item.variants}
           />
         ))}
       </div>

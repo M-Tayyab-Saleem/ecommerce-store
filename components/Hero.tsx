@@ -14,14 +14,14 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    image: "/images/hero-1.png",
+    image: "/images/hero-1.jpeg",
     title: "Handmade",
     subtitle: "Resin Artistry",
     description:
       "Discover unique, handcrafted resin jewelry and décor made with love in Pakistan.",
   },
   {
-    image: "/images/hero-2.png",
+    image: "/images/hero-2.jpeg",
     title: "Custom",
     subtitle: "Creations",
     description:

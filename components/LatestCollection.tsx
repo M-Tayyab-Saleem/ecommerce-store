@@ -32,6 +32,7 @@ const LatestCollection: React.FC<LatestCollectionProps> = ({ products }) => {
             price={item.price}
             name={item.name}
             slug={item.slug}
+            variants={item.variants}
           />
         ))}
       </div>

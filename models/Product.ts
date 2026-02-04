@@ -1,8 +1,12 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
+// Design-based variant structure
+// Each design has its own images, optional price, and stock
 export interface IVariant {
-    color: string;
-    stock: number;
+    designName: string;      // e.g., "Ocean Blue", "Sunset Glow"
+    images: string[];        // Design-specific images
+    price?: number;          // Optional price override (uses product.price if not set)
+    stock: number;           // Per-design stock
 }
 
 export interface IProduct extends Document {
@@ -10,13 +14,13 @@ export interface IProduct extends Document {
     name: string;
     slug: string;
     description: string;
-    price: number;
-    images: string[];
+    price: number;           // Base price (fallback if variant has no price)
+    images: string[];        // Base images (fallback if no variants)
     category: mongoose.Types.ObjectId;
     customizable: boolean;
     customizationNote?: string;
     variants: IVariant[];
-    stock: number;
+    stock: number;           // Base stock (used when no variants exist)
     lowStockThreshold: number;
     isActive: boolean;
     isDeleted: boolean;
@@ -25,14 +29,33 @@ export interface IProduct extends Document {
     handmadeDisclaimer: string;
     createdAt: Date;
     updatedAt: Date;
+    // Virtuals
+    totalStock: number;
+    isLowStock: boolean;
 }
 
+// Design-based variant schema
 const variantSchema = new Schema<IVariant>(
     {
-        color: {
+        designName: {
             type: String,
             required: true,
             trim: true,
+        },
+        images: {
+            type: [String],
+            default: [],
+            validate: {
+                validator: function (v: string[]) {
+                    return v.length <= 10;
+                },
+                message: 'Cannot have more than 10 images per design',
+            },
+        },
+        price: {
+            type: Number,
+            min: 0,
+            // Optional - if not set, uses product.price
         },
         stock: {
             type: Number,
@@ -151,10 +174,26 @@ productSchema.index({ isActive: 1, isDeleted: 1 });
 productSchema.index({ name: 'text', description: 'text' });
 productSchema.index({ price: 1 });
 
-// Virtual for checking low stock
-productSchema.virtual('isLowStock').get(function () {
-    return this.stock <= this.lowStockThreshold;
+// Virtual for total stock across all variants
+// Falls back to base stock if no variants exist
+productSchema.virtual('totalStock').get(function () {
+    if (this.variants && this.variants.length > 0) {
+        return this.variants.reduce((sum, variant) => sum + variant.stock, 0);
+    }
+    return this.stock;
 });
+
+// Virtual for checking low stock (uses totalStock)
+productSchema.virtual('isLowStock').get(function () {
+    const total = this.variants && this.variants.length > 0
+        ? this.variants.reduce((sum, variant) => sum + variant.stock, 0)
+        : this.stock;
+    return total <= this.lowStockThreshold;
+});
+
+// Ensure virtuals are included in JSON output
+productSchema.set('toJSON', { virtuals: true });
+productSchema.set('toObject', { virtuals: true });
 
 const Product =
     mongoose.models.Product || mongoose.model<IProduct>('Product', productSchema);

@@ -17,9 +17,9 @@ import Image from "next/image";
 import AdminCard from "@/components/admin/AdminCard";
 import StatusBadge from "@/components/admin/StatusBadge";
 import Pagination from "@/components/admin/Pagination";
-import ConfirmModal from "@/components/admin/ConfirmModal";
+import ConfirmModal from "@/components/ConfirmModal";
 import { useAdminPayments, useVerifyPayment } from "@/lib/api/admin/payments";
-import { useToast } from "@/components/admin/Toast";
+import { useToast } from "@/components/Toast";
 import { IPayment } from "@/models/Payment";
 
 export default function PaymentsPage() {

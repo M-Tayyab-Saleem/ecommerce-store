@@ -29,7 +29,7 @@ const Footer = () => {
   const socialLinks = [
     {
       name: "Instagram",
-      href: "https://instagram.com/epoxysista",
+      href: "https://www.instagram.com/epoxy_sista/?next=%2Fepoxy_sista%2F#",
       icon: Instagram,
     },
     {
@@ -141,31 +141,31 @@ const Footer = () => {
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="mt-0.5 shrink-0 text-primary" />
                 <span className="text-gray-400 text-sm">
-                  Lahore, Pakistan
+                  Karachi, Pakistan
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-primary shrink-0" />
                 <a
-                  href="tel:+923001234567"
+                  href="tel:+923022828770"
                   className="text-gray-400 hover:text-primary transition-colors text-sm"
                 >
-                  +92 300 1234567
+                  +92 302 2828770
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-primary shrink-0" />
                 <a
-                  href="mailto:hello@epoxysista.com"
+                  href="mailto:epoxysista@gmail.com"
                   className="text-gray-400 hover:text-primary transition-colors text-sm"
                 >
-                  hello@epoxysista.com
+                  epoxysista@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <MessageCircle size={18} className="text-primary shrink-0" />
                 <a
-                  href="https://wa.me/923001234567"
+                  href="https://wa.me/+923022828770"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-400 hover:text-primary transition-colors text-sm"

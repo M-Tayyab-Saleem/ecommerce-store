@@ -1,15 +1,17 @@
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect } from "react";
-import { products, Product } from "@/lib/assets";
+import axiosInstance from "@/lib/api/axios-instance";
+import { IProduct, ApiResponse } from "@/types/product";
 
-export type CartKey = string; 
+export type CartKey = string;
 export type CartItems = {
   [key: CartKey]: number;
 };
 
 export interface ShopContextType {
-  products: Product[];
+  products: IProduct[];
+  productsLoading: boolean;
   currency: string;
   delivery_fee: number;
   search: string;
@@ -28,12 +30,39 @@ export interface ShopContextType {
 export const ShopContext = createContext<ShopContextType | null>(null);
 
 export const ShopContextProvider = (props: { children: ReactNode }) => {
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
   const [cartItems, setCartItems] = useState<CartItems>({});
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
-  const currency = "$";
-  const delivery_fee = 10.0;
+  const currency = "PKR";
+  const delivery_fee = 200;
 
+  // Fetch products from API on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setProductsLoading(true);
+        const response = await axiosInstance.get<ApiResponse<IProduct[]>>("/products", {
+          params: {
+            limit: 1000, // Get all products for cart functionality
+            isActive: true,
+          },
+        });
+        if (response.data.success && response.data.data) {
+          setProducts(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Load cart from localStorage
   useEffect(() => {
     const savedCart = localStorage.getItem("cartItems");
     if (savedCart) {
@@ -41,30 +70,35 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
     }
   }, []);
 
+  // Save cart to localStorage
   useEffect(() => {
     if (Object.keys(cartItems).length > 0) {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
     } else {
-        localStorage.removeItem("cartItems");
+      localStorage.removeItem("cartItems");
     }
   }, [cartItems]);
 
   const getCartKey = (itemId: string, size: string): CartKey => `${itemId}_${size}`;
+  // Get item info from cart key (productId_designName)
   const getItemInfoFromKey = (key: CartKey) => {
-    const [itemId, size] = key.split('_');
-    return { itemId, size };
+    const parts = key.split('_');
+    const itemId = parts[0];
+    // Join remaining parts in case designName contains underscore
+    const designName = parts.slice(1).join('_') || 'default';
+    return { itemId, designName };
   };
 
-  const addToCart = (itemId: string, size: string) => {
-    const key = getCartKey(itemId, size);
+  const addToCart = (itemId: string, designName: string = 'default') => {
+    const key = getCartKey(itemId, designName);
     setCartItems((prev) => ({
       ...prev,
       [key]: (prev[key] || 0) + 1,
     }));
   };
 
-  const removeFromCart = (itemId: string, size: string) => {
-    const key = getCartKey(itemId, size);
+  const removeFromCart = (itemId: string, designName: string) => {
+    const key = getCartKey(itemId, designName);
     setCartItems((prev) => {
       const newCart = { ...prev };
       if (newCart[key] && newCart[key] > 0) {
@@ -77,8 +111,8 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
     });
   };
 
-  const updateCartItemQuantity = (itemId: string, size: string, newQuantity: number) => {
-    const key = getCartKey(itemId, size);
+  const updateCartItemQuantity = (itemId: string, designName: string, newQuantity: number) => {
+    const key = getCartKey(itemId, designName);
     setCartItems((prev) => {
       if (newQuantity <= 0) {
         const newCart = { ...prev };
@@ -89,18 +123,27 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
     });
   };
 
-  const getProductQuantity = (itemId: string, size: string): number => {
-    const key = getCartKey(itemId, size);
+  const getProductQuantity = (itemId: string, designName: string): number => {
+    const key = getCartKey(itemId, designName);
     return cartItems[key] || 0;
   };
 
+  // Calculate cart total with design-specific pricing support
   const getCartTotalAmount = () => {
     let totalAmount = 0;
     for (const key in cartItems) {
-      const { itemId } = getItemInfoFromKey(key);
+      const { itemId, designName } = getItemInfoFromKey(key);
       const product = products.find((p) => p._id === itemId);
       if (product) {
-        totalAmount += product.price * cartItems[key];
+        // Check for design-specific price
+        let price = product.price;
+        if (product.variants && product.variants.length > 0 && designName !== 'default') {
+          const variant = product.variants.find((v) => v.designName === designName);
+          if (variant && variant.price !== undefined) {
+            price = variant.price;
+          }
+        }
+        totalAmount += price * cartItems[key];
       }
     }
     return totalAmount;
@@ -116,6 +159,7 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
 
   const value: ShopContextType = {
     products,
+    productsLoading,
     currency,
     delivery_fee,
     search,

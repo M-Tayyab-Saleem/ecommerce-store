@@ -12,7 +12,7 @@ const HandmadeStory: React.FC = () => {
                     <div className="relative">
                         <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-xl">
                             <Image
-                                src="/images/handmade-story.jpg"
+                                src="/images/handmade-story.jpeg"
                                 alt="Handmade resin jewelry crafting process"
                                 fill
                                 className="object-cover"

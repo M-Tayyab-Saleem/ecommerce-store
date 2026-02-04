@@ -48,7 +48,7 @@ const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                     {posts.map((post) => (
                         <Link
                             key={post.id}
-                            href={post.link || `https://instagram.com/${instagramHandle}`}
+                            href={post.link || `https://www.instagram.com/epoxy_sista/?next=%2Fepoxy_sista%2F#`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group relative aspect-square overflow-hidden rounded-xl"
@@ -70,7 +70,7 @@ const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                 {/* Follow Button */}
                 <div className="text-center mt-8">
                     <Link
-                        href={`https://instagram.com/${instagramHandle}`}
+                        href={`https://www.instagram.com/epoxy_sista/?next=%2Fepoxy_sista%2F#`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-outline inline-flex items-center gap-2"

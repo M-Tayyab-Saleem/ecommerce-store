@@ -4,7 +4,7 @@ import React, { useState, useRef } from "react";
 import { Upload, X, Loader2 } from "lucide-react";
 import Image from "next/image";
 import adminClient from "@/lib/api/admin/axios-instance";
-import { useToast } from "@/components/admin/Toast";
+import { useToast } from "@/components/Toast";
 
 interface ImageUploaderProps {
     value?: string[];

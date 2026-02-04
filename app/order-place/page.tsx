@@ -26,6 +26,7 @@ const CheckoutPage = () => {
 
   // Step state can be used for multi-step checkout
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -54,11 +55,19 @@ const CheckoutPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle order submission
-    console.log("Order submitted:", { formData, paymentMethod, cartItems });
-    // Redirect to confirmation or process order
+    setIsSubmitting(true);
+    try {
+      // Handle order submission
+      console.log("Order submitted:", { formData, paymentMethod, cartItems });
+      // Redirect to confirmation or process order
+      // await submitOrder(...);
+    } catch (error) {
+      console.error("Order submission error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (cartItemCount === 0) {
@@ -343,7 +352,7 @@ const CheckoutPage = () => {
                     <div key={key} className="flex gap-3">
                       <div className="w-14 h-16 rounded-lg overflow-hidden bg-gray-200 shrink-0">
                         <Image
-                          src={product.image[0]}
+                          src={product.images[0]}
                           alt={product.name}
                           width={56}
                           height={64}
@@ -392,9 +401,10 @@ const CheckoutPage = () => {
               {/* Place Order Button */}
               <button
                 type="submit"
-                className="btn-primary w-full py-4 font-semibold mt-6"
+                className="btn-primary w-full py-4 font-semibold"
+                disabled={isSubmitting}
               >
-                Place Order
+                {isSubmitting ? "Placing Order..." : "Place Order"}
               </button>
 
               {/* Trust Indicators */}

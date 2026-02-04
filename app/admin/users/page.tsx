@@ -15,7 +15,7 @@ import AdminCard from "@/components/admin/AdminCard";
 import AdminTable from "@/components/admin/AdminTable";
 import Pagination from "@/components/admin/Pagination";
 import { useAdminUsers, useUpdateUserRole } from "@/lib/api/admin/users";
-import { useToast } from "@/components/admin/Toast";
+import { useToast } from "@/components/Toast";
 import { IUser } from "@/models/User";
 
 export default function UsersPage() {
@@ -102,8 +102,8 @@ export default function UsersPage() {
             header: "Role",
             render: (user: IUser) => (
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${user.role === "admin"
-                        ? "bg-purple-100 text-purple-700"
-                        : "bg-gray-100 text-gray-700"
+                    ? "bg-purple-100 text-purple-700"
+                    : "bg-gray-100 text-gray-700"
                     }`}>
                     {user.role === "admin" && <ShieldCheck size={14} />}
                     {user.role === "admin" ? "Admin" : "Customer"}
@@ -119,8 +119,8 @@ export default function UsersPage() {
                     onClick={() => handleRoleToggle(user)}
                     disabled={updateRoleMutation.isPending}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${user.role === "admin"
-                            ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                            : "bg-purple-100 text-purple-700 hover:bg-purple-200"
+                        ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        : "bg-purple-100 text-purple-700 hover:bg-purple-200"
                         } disabled:opacity-50`}
                 >
                     {updateRoleMutation.isPending ? (

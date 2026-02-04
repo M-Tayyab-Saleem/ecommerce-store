@@ -22,7 +22,7 @@ import {
 import { IOrder, OrderStatus } from "@/models/Order";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { useUpdateOrderStatus } from "@/lib/api/admin/orders";
-import { useToast } from "@/components/admin/Toast";
+import { useToast } from "@/components/Toast";
 import Image from "next/image";
 
 interface OrderDetailDrawerProps {

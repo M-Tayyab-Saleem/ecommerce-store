@@ -35,6 +35,8 @@ const BestSeller: React.FC<BestSellerProps> = ({ products }) => {
             price={item.price}
             name={item.name}
             slug={item.slug}
+            bestseller={true}
+            variants={item.variants}
           />
         ))}
       </div>

@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, FolderTree, Image as ImageIcon } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import adminClient from "@/lib/api/admin/axios-instance";
-import { useToast } from "@/components/admin/Toast";
+import { useToast } from "@/components/Toast";
 import Drawer from "@/components/admin/Drawer";
 import ImageUploader from "@/components/admin/ImageUploader";
 import { ICategory } from "@/models/Category";

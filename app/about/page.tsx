@@ -40,7 +40,7 @@ const About = () => {
             <div className="relative">
               <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-xl">
                 <Image
-                  src="/images/about-hero.jpg"
+                  src="/images/about-hero.jpeg"
                   alt="EpoxySista crafting process"
                   fill
                   className="object-cover"

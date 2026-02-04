@@ -7,14 +7,15 @@ import Link from "next/link";
 import { Trash2, ArrowLeft, Truck, Wallet } from "lucide-react";
 import { formatPKR } from "@/utils/format";
 import EmptyState from "@/components/EmptyState";
+import ConfirmModal from "@/components/ConfirmModal";
 
-// Helper function to extract info from the composite key
+// Helper function to extract info from the composite key (productId_designName)
 const getItemInfoFromKey = (key: CartKey) => {
     const parts = key.split("_");
-    return {
-        itemId: parts[0],
-        size: parts.length > 1 ? parts[1] : "N/A",
-    };
+    const itemId = parts[0];
+    // Join remaining parts in case designName contains underscore
+    const designName = parts.slice(1).join("_") || "default";
+    return { itemId, designName };
 };
 
 const Cart = () => {
@@ -36,7 +37,25 @@ const Cart = () => {
     const freeShippingThreshold = 3000;
     const remainingForFreeShipping = freeShippingThreshold - totalAmount;
     const qualifiesForFreeShipping = remainingForFreeShipping <= 0;
+
     const shippingCost = qualifiesForFreeShipping ? 0 : delivery_fee;
+
+    // Delete Confirmation State
+    const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+    const [itemToDelete, setItemToDelete] = React.useState<{ itemId: string; designName: string } | null>(null);
+
+    const handleDeleteClick = (itemId: string, designName: string) => {
+        setItemToDelete({ itemId, designName });
+        setDeleteModalOpen(true);
+    };
+
+    const confirmDelete = () => {
+        if (itemToDelete) {
+            updateCartItemQuantity(itemToDelete.itemId, itemToDelete.designName, 0);
+            setDeleteModalOpen(false);
+            setItemToDelete(null);
+        }
+    };
 
     return (
         <div className="container-custom pt-24 pb-16">
@@ -102,14 +121,25 @@ const Cart = () => {
                         {/* Cart Items */}
                         <div className="space-y-4">
                             {cartKeys.map((key) => {
-                                const { itemId, size } = getItemInfoFromKey(key);
+                                const { itemId, designName } = getItemInfoFromKey(key);
                                 const product = getProductById(itemId);
                                 const quantity = cartItems[key];
 
                                 if (!product) return null;
 
-                                const itemTotal = product.price * quantity;
-                                const productUrl = `/product/${itemId}`;
+                                // Find variant for design-specific data
+                                const variant = designName !== "default" && product.variants?.length
+                                    ? product.variants.find((v) => v.designName === designName)
+                                    : null;
+
+                                // Use design-specific price if available
+                                const price = variant?.price ?? product.price;
+                                const itemTotal = price * quantity;
+
+                                // Use design-specific image if available
+                                const displayImage = variant?.images?.[0] || product.images?.[0];
+
+                                const productUrl = `/products/${product.slug}`;
 
                                 return (
                                     <div
@@ -121,13 +151,19 @@ const Cart = () => {
                                             href={productUrl}
                                             className="shrink-0 w-24 h-28 rounded-lg overflow-hidden bg-gray-100"
                                         >
-                                            <Image
-                                                src={product.image[0]}
-                                                alt={product.name}
-                                                width={96}
-                                                height={112}
-                                                className="w-full h-full object-cover"
-                                            />
+                                            {displayImage ? (
+                                                <Image
+                                                    src={displayImage}
+                                                    alt={product.name}
+                                                    width={96}
+                                                    height={112}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                    No Image
+                                                </div>
+                                            )}
                                         </Link>
 
                                         {/* Product Details */}
@@ -140,9 +176,9 @@ const Cart = () => {
                                                     >
                                                         {product.name}
                                                     </Link>
-                                                    {size !== "N/A" && size !== "default" && (
+                                                    {designName !== "default" && (
                                                         <p className="text-sm text-gray-500 mt-0.5">
-                                                            Size: {size}
+                                                            Design: {designName}
                                                         </p>
                                                     )}
                                                     <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
@@ -159,7 +195,7 @@ const Cart = () => {
                                                 <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
                                                     <button
                                                         onClick={() =>
-                                                            updateCartItemQuantity(itemId, size, quantity - 1)
+                                                            updateCartItemQuantity(itemId, designName, quantity - 1)
                                                         }
                                                         className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 transition-colors"
                                                         aria-label="Decrease quantity"
@@ -171,7 +207,7 @@ const Cart = () => {
                                                     </span>
                                                     <button
                                                         onClick={() =>
-                                                            updateCartItemQuantity(itemId, size, quantity + 1)
+                                                            updateCartItemQuantity(itemId, designName, quantity + 1)
                                                         }
                                                         className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 transition-colors"
                                                         aria-label="Increase quantity"
@@ -182,9 +218,7 @@ const Cart = () => {
 
                                                 <button
                                                     className="text-sm text-red-500 hover:text-red-700 flex items-center gap-1 transition-colors"
-                                                    onClick={() =>
-                                                        updateCartItemQuantity(itemId, size, 0)
-                                                    }
+                                                    onClick={() => handleDeleteClick(itemId, designName)}
                                                 >
                                                     <Trash2 size={16} />
                                                     <span className="hidden sm:inline">Remove</span>
@@ -258,6 +292,16 @@ const Cart = () => {
                     </div>
                 </div>
             )}
+            {/* Delete Confirmation Modal */}
+            <ConfirmModal
+                isOpen={deleteModalOpen}
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteModalOpen(false)}
+                title="Remove Item"
+                message="Are you sure you want to remove this item from your cart?"
+                variant="danger"
+                confirmText="Remove"
+            />
         </div>
     );
 };

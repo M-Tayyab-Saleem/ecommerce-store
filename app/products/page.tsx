@@ -201,7 +201,7 @@ const ProductsContent = () => {
                             name="category"
                             checked={selectedCategory === ""}
                             onChange={() => setSelectedCategory("")}
-                            className="w-4 h-4 border-gray-300 text-primary focus:ring-primary"
+                            className="w-4 h-4 border-gray-300 text-primary focus:ring-primary accent-primary cursor-pointer"
                         />
                         <span>All Categories</span>
                     </label>
@@ -212,7 +212,7 @@ const ProductsContent = () => {
                                 name="category"
                                 checked={selectedCategory === category._id}
                                 onChange={() => setSelectedCategory(category._id)}
-                                className="w-4 h-4 border-gray-300 text-primary focus:ring-primary"
+                                className="w-4 h-4 border-gray-300 text-primary focus:ring-primary accent-primary cursor-pointer"
                             />
                             <span>{category.name}</span>
                         </label>
@@ -230,7 +230,7 @@ const ProductsContent = () => {
                                 type="checkbox"
                                 checked={selectedPriceRanges.includes(filter.value)}
                                 onChange={() => togglePriceRange(filter.value)}
-                                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary cursor-pointer"
                             />
                             <span>{filter.label}</span>
                         </label>
@@ -247,7 +247,7 @@ const ProductsContent = () => {
                             type="checkbox"
                             checked={showBestsellers}
                             onChange={() => setShowBestsellers(!showBestsellers)}
-                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary cursor-pointer"
                         />
                         <span>Best Sellers</span>
                     </label>
@@ -256,7 +256,7 @@ const ProductsContent = () => {
                             type="checkbox"
                             checked={showCustomizable}
                             onChange={() => setShowCustomizable(!showCustomizable)}
-                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary cursor-pointer"
                         />
                         <span>Customizable</span>
                     </label>
@@ -265,7 +265,7 @@ const ProductsContent = () => {
                             type="checkbox"
                             checked={showInStock}
                             onChange={() => setShowInStock(!showInStock)}
-                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary cursor-pointer"
                         />
                         <span>In Stock</span>
                     </label>
@@ -322,7 +322,7 @@ const ProductsContent = () => {
                         </button>
 
                         {/* Results Count */}
-                        <p className="text-sm text-gray-600 hidden lg:block">
+                        <p className="text-sm text-gray-600">
                             {total} products found
                         </p>
 
@@ -414,6 +414,7 @@ const ProductsContent = () => {
                                         price={product.price}
                                         name={product.name}
                                         slug={product.slug}
+                                        variants={product.variants}
                                     />
                                 ))}
                             </div>
