@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import axiosInstance from '@/lib/api/axios-instance';
-import { ApiResponse, IProduct } from '@/types/product';
+import { getProductBySlug } from '@/lib/services/product-service';
+import { IProduct } from '@/types/product';
 import { generateProductMetadata, generateProductJsonLd, generateBreadcrumbJsonLd } from '@/utils/seo';
 import RelatedProducts from '@/components/RelatedProducts';
 import ProductDetailsClient from '@/components/ProductDetailsClient';
@@ -11,15 +11,15 @@ import ProductDetailsClient from '@/components/ProductDetailsClient';
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     try {
         const { slug } = await params;
-        const response = await axiosInstance.get<ApiResponse<IProduct>>(`/products/slug/${slug}`);
+        const product = await getProductBySlug(slug);
 
-        if (!response.data.success || !response.data.data) {
+        if (!product) {
             return {
                 title: 'Product Not Found',
             };
         }
 
-        return generateProductMetadata(response.data.data);
+        return generateProductMetadata(product as unknown as IProduct);
     } catch {
         return {
             title: 'Product Not Found',
@@ -27,24 +27,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
 }
 
-// Fetch product data
-async function getProduct(slug: string): Promise<IProduct | null> {
-    try {
-        const response = await axiosInstance.get<ApiResponse<IProduct>>(`/products/${slug}`);
-        return response.data.success && response.data.data ? response.data.data : null;
-    } catch {
-        console.error('Error fetching product');
-        return null;
-    }
-}
-
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
-    const product = await getProduct(slug);
+    const productData = await getProductBySlug(slug);
 
-    if (!product) {
+    if (!productData) {
         notFound();
     }
+
+    const product = productData as unknown as IProduct;
 
     const categoryName = typeof product.category === 'object' ? product.category.name : '';
     const categorySlug = typeof product.category === 'object' ? product.category.slug : '';

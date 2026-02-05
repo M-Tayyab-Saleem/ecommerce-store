@@ -86,7 +86,7 @@ const Navbar = () => {
         }`}
     >
       <div className="container-custom flex items-center justify-between">
-        <Link href="/" className="relative block h-20 md:h-28 w-auto -my-3 md:-my-5">
+        <Link href="/" className="relative block h-18 md:h-24 w-auto -my-3 md:-my-5">
           <Image src="/images/logo.png" alt="EpoxySista" width={160} height={50} className="h-full w-auto object-contain" priority />
         </Link>
 

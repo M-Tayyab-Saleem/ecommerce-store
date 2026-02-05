@@ -143,3 +143,30 @@ export async function getProducts(options: GetProductsOptions = {}) {
         }
     };
 }
+
+export async function getProductBySlug(slug: string) {
+    await dbConnect();
+    // Ensure Category model is registered
+    void Category;
+
+    const query = { slug, isDeleted: false };
+    const product = await Product.findOne(query).populate('category', 'name slug').lean();
+
+    if (!product) return null;
+
+    // Type assertion or checking safely
+    const categoryData = product.category && typeof product.category === 'object' && '_id' in product.category
+        ? {
+            ...product.category,
+            _id: (product.category._id as mongoose.Types.ObjectId).toString()
+        }
+        : null;
+
+    return {
+        ...product,
+        _id: (product._id as mongoose.Types.ObjectId).toString(),
+        category: categoryData,
+        createdAt: product.createdAt ? new Date(product.createdAt).toISOString() : undefined,
+        updatedAt: product.updatedAt ? new Date(product.updatedAt).toISOString() : undefined,
+    };
+}
