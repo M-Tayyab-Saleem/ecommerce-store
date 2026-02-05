@@ -5,6 +5,7 @@ import Category from '@/models/Category';
 void Category; // Ensure Category is registered
 import Product from '@/models/Product';
 import { requireAdmin, verifyAuth } from '@/lib/authMiddleware';
+import { getProducts } from '@/lib/services/product-service';
 import {
     successResponse,
     unauthorizedResponse,
@@ -56,21 +57,19 @@ const productSchema = z.object({
 // GET /api/products - List products with filtering and pagination
 export async function GET(request: NextRequest) {
     try {
-        await dbConnect();
-
         const { searchParams } = new URL(request.url);
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '12');
-        const category = searchParams.get('category');
-        const search = searchParams.get('search');
-        const minPrice = searchParams.get('minPrice');
-        const maxPrice = searchParams.get('maxPrice');
+        const category = searchParams.get('category') || undefined;
+        const search = searchParams.get('search') || undefined;
+        const minPrice = searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice')!) : undefined;
+        const maxPrice = searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice')!) : undefined;
         const sort = searchParams.get('sort') || 'createdAt';
-        const order = searchParams.get('order') || 'desc';
+        const order = (searchParams.get('order') as 'asc' | 'desc') || 'desc';
         const includeInactive = searchParams.get('includeInactive') === 'true';
         const lowStockOnly = searchParams.get('lowStockOnly') === 'true';
-        const isBestSeller = searchParams.get('isBestSeller');
-        const isLatest = searchParams.get('isLatest');
+        const isBestSeller = searchParams.get('isBestSeller') === 'true';
+        const isLatest = searchParams.get('isLatest') === 'true';
 
         const isActiveParam = searchParams.get('isActive');
 
@@ -78,100 +77,44 @@ export async function GET(request: NextRequest) {
         const authResult = await verifyAuth(request);
         const isAdmin = authResult.success && authResult.user?.role === 'admin';
 
-        // Build query
-        const query: Record<string, unknown> = {
-            isDeleted: false,
-        };
+        // Determine active status logic
+        let serviceIsActive: boolean | undefined = undefined;
+        let serviceIncludeInactive = false;
 
-        // Admin filtering logic
         if (isAdmin) {
-            // If admin, check if specific status requested
             if (isActiveParam === 'true') {
-                query.isActive = true;
+                serviceIsActive = true;
             } else if (isActiveParam === 'false') {
-                query.isActive = false;
-            }
-            // If isActiveParam is not set or 'all', implicitly show all (do not set query.isActive)
-            // UNLESS includeInactive is explicitly false? Default behavior for admin is usually 'show all' in admin view?
-            // But let's stick to: if not filtered, show all is fine, OR stick to existing 'includeInactive' logic?
-            // Let's support the 'includeInactive' as 'show all'.
-
-            if (!isActiveParam && !includeInactive) {
-                // Default to active only if no specific request? 
-                // Actually, usually admin wants to see EVERYTHING by default or strictly active? 
-                // Existing code was: if (!includeInactive) query.isActive = true;
-                query.isActive = true;
-            } else if (includeInactive) {
-                // Show all (delete isActive query if it exists? No, just don't set it)
-                if (!isActiveParam) delete query.isActive;
+                serviceIsActive = false;
+            } else if (!includeInactive) {
+                // Default to active only if no specific request
+                serviceIsActive = true;
+            } else {
+                // Show all
+                serviceIncludeInactive = true;
             }
         } else {
             // Non-admin: ALWAYS active only
-            query.isActive = true;
+            serviceIsActive = true;
         }
 
-        // Category filter - accepts either ObjectId or slug
-        if (category) {
-            if (mongoose.Types.ObjectId.isValid(category)) {
-                query.category = new mongoose.Types.ObjectId(category);
-            } else {
-                // Try to find category by slug
-                const Category = mongoose.models.Category || (await import('@/models/Category')).default;
-                const categoryDoc = await Category.findOne({ slug: category, isActive: true });
-                if (categoryDoc) {
-                    query.category = categoryDoc._id;
-                }
-            }
-        }
-
-        // Search filter
-        if (search) {
-            query.$text = { $search: search };
-        }
-
-        // Price range filter
-        if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) (query.price as Record<string, number>).$gte = parseFloat(minPrice);
-            if (maxPrice) (query.price as Record<string, number>).$lte = parseFloat(maxPrice);
-        }
-
-        // Low stock filter (admin only)
-        if (isAdmin && lowStockOnly) {
-            query.$expr = { $lte: ['$stock', '$lowStockThreshold'] };
-        }
-
-        // Best seller filter
-        if (isBestSeller === 'true') {
-            query.isBestSeller = true;
-        }
-
-        // Latest products filter
-        if (isLatest === 'true') {
-            query.isLatest = true;
-        }
-
-        // Sorting
-        const sortOptions: Record<string, 1 | -1> = {};
-        sortOptions[sort] = order === 'asc' ? 1 : -1;
-
-        // Pagination
-        const skip = (page - 1) * limit;
-        const total = await Product.countDocuments(query);
-        const totalPages = Math.ceil(total / limit);
-
-        const products = await Product.find(query)
-            .populate('category', 'name slug')
-            .sort(sortOptions)
-            .skip(skip)
-            .limit(limit);
-
-        return successResponse('Products retrieved successfully', products, 200, {
+        const { products, metadata } = await getProducts({
             page,
             limit,
-            total,
-            totalPages,
+            category,
+            search,
+            minPrice,
+            maxPrice,
+            sort,
+            order,
+            isActive: serviceIsActive,
+            includeInactive: serviceIncludeInactive,
+            lowStockOnly: isAdmin ? lowStockOnly : false, // helper logic
+            isBestSeller,
+            isLatest
         });
+
+        return successResponse('Products retrieved successfully', products, 200, metadata);
     } catch (error) {
         return serverErrorResponse(error);
     }

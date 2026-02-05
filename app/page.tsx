@@ -12,55 +12,21 @@ import NewsletterBox from "@/components/NewsletterBox";
 import WhatsAppCTA from "@/components/WhatsAppCTA";
 import { IProduct } from "@/types/product";
 
-// API base URL for server-side fetches
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
-
-// Function to get products from backend API (server-side)
-async function getProducts(): Promise<{
-  latestProducts: IProduct[];
-  bestSellerProducts: IProduct[];
-  allProducts: IProduct[];
-}> {
-  try {
-    // Fetch latest products
-    const latestRes = await fetch(
-      `${API_URL}/products?isLatest=true&limit=10&sort=createdAt&order=desc`,
-      { next: { revalidate: 60 } } // Revalidate every 60 seconds
-    );
-    const latestData = await latestRes.json();
-
-    // Fetch bestseller products  
-    const bestSellerRes = await fetch(
-      `${API_URL}/products?isBestSeller=true&limit=5`,
-      { next: { revalidate: 60 } }
-    );
-    const bestSellerData = await bestSellerRes.json();
-
-    // Fetch all products as fallback
-    const allRes = await fetch(
-      `${API_URL}/products?limit=10`,
-      { next: { revalidate: 60 } }
-    );
-    const allData = await allRes.json();
-
-    return {
-      latestProducts: latestData.data || [],
-      bestSellerProducts: bestSellerData.data || [],
-      allProducts: allData.data || [],
-    };
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    // Return empty arrays if API fails
-    return {
-      latestProducts: [],
-      bestSellerProducts: [],
-      allProducts: [],
-    };
-  }
-}
+// Product service for direct DB access
+import { getProducts } from "@/lib/services/product-service";
 
 export default async function Home() {
-  const { latestProducts, bestSellerProducts, allProducts } = await getProducts();
+  // Fetch data directly from the database (Server Component)
+  // This avoids "fetch failed" errors when deploying to Vercel (localhost issue)
+  const [latestData, bestSellerData, allData] = await Promise.all([
+    getProducts({ isLatest: true, limit: 10, sort: 'createdAt', order: 'desc' }),
+    getProducts({ isBestSeller: true, limit: 5 }),
+    getProducts({ limit: 10 })
+  ]);
+
+  const latestProducts = latestData.products as unknown as IProduct[];
+  const bestSellerProducts = bestSellerData.products as unknown as IProduct[];
+  const allProducts = allData.products as unknown as IProduct[];
 
   return (
     <>
