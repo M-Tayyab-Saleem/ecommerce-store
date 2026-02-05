@@ -34,7 +34,7 @@ const Footer = () => {
     },
     {
       name: "Facebook",
-      href: "https://facebook.com/epoxysista",
+      href: "https://www.facebook.com/share/17cvrD59xc",
       icon: Facebook,
     },
     {
