@@ -43,12 +43,14 @@ const createOrderSchema = z.object({
         .array(orderItemSchema)
         .min(1, 'Order must have at least one item'),
     shippingAddress: shippingAddressSchema,
-    paymentMethod: z.enum(['COD', 'BANK_TRANSFER', 'JAZZCASH', 'EASYPAISA']),
+    paymentMethod: z.string(), // Allow string to support specific manual methods like JAZZCASH, EASYPAISA
     notes: z
         .string()
         .max(500, 'Notes cannot exceed 500 characters')
         .optional(),
     email: z.string().email('Invalid email address').optional(),
+    screenshot: z.string().optional(),
+    transactionId: z.string().optional(),
 });
 
 // GET /api/orders - Admin: Get all orders
@@ -298,6 +300,8 @@ export async function POST(request: NextRequest) {
                 method: paymentMethod,
                 amount: totalAmount,
                 status: 'pending',
+                screenshot: (validationResult.data as any).screenshot,
+                transactionId: (validationResult.data as any).transactionId,
             });
         }
 

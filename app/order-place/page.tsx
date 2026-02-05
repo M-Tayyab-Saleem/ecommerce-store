@@ -9,12 +9,34 @@ import axiosInstance from "@/lib/api/axios-instance";
 import { ArrowLeft, Truck, Wallet, Shield, MessageCircle } from "lucide-react";
 import { formatPKR } from "@/utils/format";
 
-// Helper function to extract info from the composite key
 const getItemInfoFromKey = (key: CartKey) => {
   const parts = key.split("_");
   const itemId = parts[0];
   const size = parts.slice(1).join("_") || "N/A";
   return { itemId, size };
+};
+
+const PAYMENT_ACCOUNTS = {
+  EASYPAISA: {
+    title: "EasyPaisa",
+    accountName: "Store Owner Name",
+    accountNumber: "0300-1234567",
+    instruction: "Please send the exact amount and upload the screenshot below.",
+  },
+  JAZZCASH: {
+    title: "JazzCash",
+    accountName: "Store Owner Name",
+    accountNumber: "0300-1234567",
+    instruction: "Please send the exact amount and upload the screenshot below.",
+  },
+  BANK_TRANSFER: {
+    title: "Bank Transfer",
+    bankName: "Meezan Bank",
+    accountTitle: "Store Owner Name",
+    accountNumber: "1234567890",
+    iban: "PK00MEZN0000001234567890",
+    instruction: "Please use your Order ID as reference.",
+  },
 };
 
 const CheckoutPage = () => {
@@ -28,6 +50,9 @@ const CheckoutPage = () => {
 
   // Step state can be used for multi-step checkout
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [screenshot, setScreenshot] = useState<File | null>(null);
+  const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
+  const [transactionId, setTransactionId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
@@ -59,10 +84,47 @@ const CheckoutPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size exceeds 5MB");
+        return;
+      }
+      setScreenshot(file);
+      setScreenshotPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      // Validate Screenshot for non-COD
+      if (paymentMethod !== 'cod' && !screenshot) {
+        alert("Please upload a payment screenshot.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Upload Screenshot if exists
+      let uploadedScreenshotUrl = "";
+      if (screenshot) {
+        const reader = new FileReader();
+        const base64Image = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(screenshot);
+        });
+
+        const uploadRes = await axiosInstance.post("/upload", { image: base64Image });
+        if (uploadRes.data.success) {
+          uploadedScreenshotUrl = uploadRes.data.data.url;
+        } else {
+          throw new Error("Failed to upload screenshot");
+        }
+      }
+
       // Prepare items for API
       const items = cartKeys
         .map((key) => {
@@ -94,9 +156,11 @@ const CheckoutPage = () => {
           city: formData.city,
           postalCode: formData.postalCode,
         },
-        paymentMethod: paymentMethod === 'cod' ? 'COD' : 'BANK_TRANSFER',
+        paymentMethod: paymentMethod === 'cod' ? 'COD' : paymentMethod.toUpperCase(),
         notes: formData.notes,
         email: formData.email, // Required for guest checkout
+        screenshot: uploadedScreenshotUrl,
+        transactionId,
       };
 
       const response = await axiosInstance.post('/orders', orderData);
@@ -331,7 +395,7 @@ const CheckoutPage = () => {
               </h2>
 
               <div className="space-y-3">
-                {/* COD - Primary option for Pakistan */}
+                {/* COD */}
                 <label
                   className={`flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === "cod"
                     ? "border-primary bg-primary/5"
@@ -352,19 +416,16 @@ const CheckoutPage = () => {
                       <span className="font-semibold text-gray-900">
                         Cash on Delivery (COD)
                       </span>
-                      <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-                        Recommended
-                      </span>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
-                      Pay when you receive your order. No advance payment needed.
+                      Pay when you receive your order.
                     </p>
                   </div>
                 </label>
 
-                {/* Bank Transfer */}
+                {/* EasyPaisa */}
                 <label
-                  className={`flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === "bank"
+                  className={`flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === "easypaisa"
                     ? "border-primary bg-primary/5"
                     : "border-gray-200 hover:border-gray-300"
                     }`}
@@ -372,21 +433,204 @@ const CheckoutPage = () => {
                   <input
                     type="radio"
                     name="paymentMethod"
-                    value="bank"
-                    checked={paymentMethod === "bank"}
+                    value="easypaisa"
+                    checked={paymentMethod === "easypaisa"}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                     className="mt-1 w-4 h-4 text-primary focus:ring-primary"
                   />
                   <div className="flex-1">
-                    <span className="font-semibold text-gray-900">
-                      Bank Transfer / JazzCash / EasyPaisa
-                    </span>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Pay via bank transfer or mobile wallet. We&apos;ll share account details after you place the order.
-                    </p>
+                    <span className="font-semibold text-gray-900">EasyPaisa</span>
+                  </div>
+                </label>
+
+                {/* JazzCash */}
+                <label
+                  className={`flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === "jazzcash"
+                    ? "border-primary bg-primary/5"
+                    : "border-gray-200 hover:border-gray-300"
+                    }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="jazzcash"
+                    checked={paymentMethod === "jazzcash"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="mt-1 w-4 h-4 text-primary focus:ring-primary"
+                  />
+                  <div className="flex-1">
+                    <span className="font-semibold text-gray-900">JazzCash</span>
+                  </div>
+                </label>
+
+                {/* Bank Transfer */}
+                <label
+                  className={`flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === "bank_transfer"
+                    ? "border-primary bg-primary/5"
+                    : "border-gray-200 hover:border-gray-300"
+                    }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="bank_transfer"
+                    checked={paymentMethod === "bank_transfer"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="mt-1 w-4 h-4 text-primary focus:ring-primary"
+                  />
+                  <div className="flex-1">
+                    <span className="font-semibold text-gray-900">Bank Transfer</span>
                   </div>
                 </label>
               </div>
+
+              {/* Payment Info Card & Upload */}
+              {paymentMethod !== "cod" && (
+                <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200 animate-in fade-in slide-in-from-top-4 duration-300">
+                  {(() => {
+                    const methodKey = paymentMethod.toUpperCase() as keyof typeof PAYMENT_ACCOUNTS;
+                    const details = PAYMENT_ACCOUNTS[methodKey];
+                    if (!details) return null;
+
+                    return (
+                      <div className="space-y-4">
+                        <h3 className="font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                          {details.title} Details
+                        </h3>
+                        <div className="space-y-2 text-sm text-gray-700">
+                          {'bankName' in details && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Bank Name:</span>
+                              <span className="font-medium">{details.bankName}</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Account Title:</span>
+                            <span className="font-medium">
+                              {'accountName' in details ? details.accountName : details.accountTitle}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Account Number:</span>
+                            <span className="font-medium font-mono bg-white px-1 rounded border border-gray-200">
+                              {details.accountNumber}
+                            </span>
+                          </div>
+                          {'iban' in details && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">IBAN:</span>
+                              <span className="font-medium font-mono text-xs break-all bg-white px-1 rounded border border-gray-200">
+                                {details.iban}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="bg-blue-50 text-blue-700 p-3 rounded-lg text-sm">
+                          {details.instruction}
+                        </div>
+
+                        {/* Transaction ID Input */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Transaction ID / Reference No (Optional)
+                          </label>
+                          <input
+                            type="text"
+                            value={transactionId}
+                            onChange={(e) => setTransactionId(e.target.value)}
+                            className="input"
+                            placeholder="e.g. 1234567890"
+                          />
+                        </div>
+
+                        {/* Screenshot Upload */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Upload Payment Screenshot *
+                          </label>
+                          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg bg-white relative hover:bg-gray-50 transition-colors">
+                            <div className="space-y-1 text-center">
+                              {screenshotPreview ? (
+                                <div className="relative w-full h-48 mb-4">
+                                  <Image
+                                    src={screenshotPreview}
+                                    alt="Payment Screenshot"
+                                    fill
+                                    className="object-contain rounded"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setScreenshot(null);
+                                      setScreenshotPreview(null);
+                                    }}
+                                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 shadow hover:bg-red-600"
+                                  >
+                                    <Shield size={16} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <>
+                                  <svg
+                                    className="mx-auto h-12 w-12 text-gray-400"
+                                    stroke="currentColor"
+                                    fill="none"
+                                    viewBox="0 0 48 48"
+                                    aria-hidden="true"
+                                  >
+                                    <path
+                                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                      strokeWidth={2}
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                  </svg>
+                                  <div className="flex text-sm text-gray-600 justify-center">
+                                    <label
+                                      htmlFor="file-upload"
+                                      className="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-primary-dark focus-within:outline-none"
+                                    >
+                                      <span>Upload a file</span>
+                                      <input
+                                        id="file-upload"
+                                        name="file-upload"
+                                        type="file"
+                                        className="sr-only"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                      />
+                                    </label>
+                                    <p className="pl-1">or drag and drop</p>
+                                  </div>
+                                  <p className="text-xs text-gray-500">
+                                    PNG, JPG, GIF up to 5MB
+                                  </p>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* WhatsApp Option */}
+                        <div className="pt-2 text-center">
+                          <p className="text-sm text-gray-500 mb-2">OR</p>
+                          <a
+                            href={`https://wa.me/923022828770?text=${encodeURIComponent(
+                              `Hi! I want to confirm my order. Payment Method: ${details.title}`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-[#25D366] font-medium hover:underline text-sm"
+                          >
+                            <MessageCircle size={16} />
+                            Send screenshot on WhatsApp
+                          </a>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
           </div>
 

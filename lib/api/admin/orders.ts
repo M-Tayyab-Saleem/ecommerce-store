@@ -66,3 +66,16 @@ export const useUpdateOrderStatus = () => {
         },
     });
 };
+
+// Fetch payment details for an order
+export const useAdminPayment = (orderId: string | undefined) => {
+    return useQuery({
+        queryKey: ["admin", "payment", orderId],
+        queryFn: async () => {
+            if (!orderId) return null;
+            const { data } = await adminClient.get(`/orders/${orderId}/payment`);
+            return data.data;
+        },
+        enabled: !!orderId,
+    });
+};

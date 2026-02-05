@@ -9,7 +9,6 @@ import {
     Clock,
     User,
     Phone,
-    Building,
     FileText,
     ChevronDown,
     Loader2,
@@ -17,13 +16,65 @@ import {
     XCircle,
     Truck,
     Box,
-    AlertCircle
+    AlertCircle,
+    Eye
 } from "lucide-react";
 import { IOrder, OrderStatus } from "@/models/Order";
 import StatusBadge from "@/components/admin/StatusBadge";
-import { useUpdateOrderStatus } from "@/lib/api/admin/orders";
+import { useUpdateOrderStatus, useAdminPayment } from "@/lib/api/admin/orders";
 import { useToast } from "@/components/Toast";
 import Image from "next/image";
+
+const PaymentDetailsSection = ({ orderId, method }: { orderId: string; method: string }) => {
+    const { data: payment, isLoading } = useAdminPayment(orderId);
+
+    if (isLoading) return <div className="text-sm text-gray-500 animate-pulse">Loading payment details...</div>;
+    if (!payment) return null;
+
+    return (
+        <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+            {payment.transactionId && (
+                <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Transaction ID</p>
+                    <p className="font-mono text-sm bg-gray-50 px-2 py-1 rounded border border-gray-200 inline-block">
+                        {payment.transactionId}
+                    </p>
+                </div>
+            )}
+
+            {payment.screenshot && (
+                <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-2">Payment Proof</p>
+                    <div className="relative w-full h-48 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 group">
+                        <Image
+                            src={payment.screenshot}
+                            alt="Payment Proof"
+                            fill
+                            className="object-contain"
+                        />
+                        <a
+                            href={payment.screenshot}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                            <span className="text-white text-sm font-medium bg-black/50 px-3 py-1.5 rounded-full flex items-center gap-2">
+                                <Eye size={16} /> View Full Image
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            )}
+            {/* If manual payment but no screenshot */}
+            {method !== 'COD' && !payment.screenshot && (
+                <div className="text-sm text-orange-600 bg-orange-50 p-2 rounded flex items-center gap-2">
+                    <AlertCircle size={16} />
+                    <span>No payment screenshot uploaded yet.</span>
+                </div>
+            )}
+        </div>
+    );
+};
 
 interface OrderDetailDrawerProps {
     order: IOrder | null;
@@ -295,17 +346,30 @@ export default function OrderDetailDrawer({ order, isOpen, onClose }: OrderDetai
 
                     {/* Payment Method */}
                     <section className="bg-white rounded-lg border border-gray-200 p-4">
-                        <h3 className="font-medium text-gray-900 flex items-center gap-2 mb-3">
-                            <CreditCard size={18} />
-                            Payment
-                        </h3>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="font-medium text-gray-900 flex items-center gap-2">
+                                <CreditCard size={18} />
+                                Payment
+                            </h3>
+                            <button
+                                onClick={() => window.location.reload()} // Quick hack to refresh payment if needed? No, query will handle it.
+                                className="text-xs text-primary hover:underline"
+                            >
+                                Refresh
+                            </button>
+                        </div>
+
+                        <div className="flex items-center justify-between mb-4">
                             <div>
                                 <p className="text-sm text-gray-600">Method</p>
                                 <p className="font-semibold text-gray-900">{order.paymentMethod}</p>
                             </div>
                             <StatusBadge status={order.paymentStatus} type="payment" />
                         </div>
+
+                        {/* Fetch Payment Details */}
+                        <PaymentDetailsSection orderId={order._id.toString()} method={order.paymentMethod} />
+
                     </section>
 
                     {/* Order Notes */}
