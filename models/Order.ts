@@ -27,10 +27,19 @@ export type OrderStatus =
     | 'delivered'
     | 'cancelled';
 
+export interface IGuestInfo {
+    name: string;
+    email: string; // Required for guest to send updates
+    phone: string;
+    address: string;
+    city: string;
+}
+
 export interface IOrder extends Document {
     _id: mongoose.Types.ObjectId;
     orderId: string;
-    user: mongoose.Types.ObjectId;
+    user?: mongoose.Types.ObjectId; // Optional now
+    guestInfo?: IGuestInfo;        // New field for guests
     items: IOrderItem[];
     shippingAddress: IShippingAddress;
     paymentMethod: PaymentMethod;
@@ -111,6 +120,17 @@ const shippingAddressSchema = new Schema<IShippingAddress>(
     { _id: false }
 );
 
+const guestInfoSchema = new Schema<IGuestInfo>(
+    {
+        name: { type: String, required: true },
+        email: { type: String, required: true },
+        phone: { type: String, required: true },
+        address: { type: String, required: true },
+        city: { type: String, required: true },
+    },
+    { _id: false }
+);
+
 const orderSchema = new Schema<IOrder>(
     {
         orderId: {
@@ -121,7 +141,11 @@ const orderSchema = new Schema<IOrder>(
         user: {
             type: Schema.Types.ObjectId,
             ref: 'User',
-            required: true,
+            required: false, // Changed from true to false
+        },
+        guestInfo: {
+            type: guestInfoSchema,
+            required: false,
         },
         items: {
             type: [orderItemSchema],

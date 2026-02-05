@@ -4,16 +4,17 @@ import React, { useState, useContext } from "react";
 import { ShopContext, ShopContextType, CartKey } from "@/context/ShopContext";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import axiosInstance from "@/lib/api/axios-instance";
 import { ArrowLeft, Truck, Wallet, Shield, MessageCircle } from "lucide-react";
 import { formatPKR } from "@/utils/format";
 
 // Helper function to extract info from the composite key
 const getItemInfoFromKey = (key: CartKey) => {
   const parts = key.split("_");
-  return {
-    itemId: parts[0],
-    size: parts.length > 1 ? parts[1] : "N/A",
-  };
+  const itemId = parts[0];
+  const size = parts.slice(1).join("_") || "N/A";
+  return { itemId, size };
 };
 
 const CheckoutPage = () => {
@@ -22,11 +23,14 @@ const CheckoutPage = () => {
     cartItems,
     getCartTotalAmount,
     delivery_fee,
+    clearCart,
   } = useContext(ShopContext) as ShopContextType;
 
   // Step state can be used for multi-step checkout
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -59,12 +63,58 @@ const CheckoutPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      // Handle order submission
-      console.log("Order submitted:", { formData, paymentMethod, cartItems });
-      // Redirect to confirmation or process order
-      // await submitOrder(...);
-    } catch (error) {
+      // Prepare items for API
+      const items = cartKeys
+        .map((key) => {
+          const { itemId, size } = getItemInfoFromKey(key);
+          // Verify product exists
+          const product = getProductById(itemId);
+          if (!product) return null;
+
+          return {
+            product: itemId,
+            quantity: cartItems[key],
+            selectedVariant: size !== "N/A" ? size : undefined,
+          };
+        })
+        .filter((item) => item !== null); // Filter out nulls (invalid products)
+
+      if (items.length === 0) {
+        alert("Your cart contains unavailable items. Please refresh the page.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const orderData = {
+        items,
+        shippingAddress: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode,
+        },
+        paymentMethod: paymentMethod === 'cod' ? 'COD' : 'BANK_TRANSFER',
+        notes: formData.notes,
+        email: formData.email, // Required for guest checkout
+      };
+
+      const response = await axiosInstance.post('/orders', orderData);
+
+      if (response.data.success) {
+        clearCart();
+        router.push(`/order-success?orderId=${response.data.data.orderId}`);
+      } else {
+        alert("Failed to place order. Please try again.");
+      }
+    } catch (error: unknown) {
       console.error("Order submission error:", error);
+      let errorMessage = "Something went wrong while placing your order.";
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        errorMessage = (error as any).response?.data?.message || errorMessage;
+      }
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -83,6 +133,9 @@ const CheckoutPage = () => {
     );
   }
 
+  // Check if user is logged in (client-side check roughly based on cookie existence or context if available)
+  // For now, we will just add the link.
+
   return (
     <div className="container-custom pt-24 pb-16">
       {/* Header */}
@@ -94,9 +147,14 @@ const CheckoutPage = () => {
           <ArrowLeft size={18} />
           Back to Cart
         </Link>
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-          Checkout
-        </h1>
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+            Checkout
+          </h1>
+          <Link href="/login" className="text-sm font-medium text-primary hover:underline">
+            Already have an account? Login for faster checkout
+          </Link>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -342,17 +400,27 @@ const CheckoutPage = () => {
               {/* Cart Items */}
               <div className="space-y-3 max-h-60 overflow-y-auto mb-4">
                 {cartKeys.map((key) => {
-                  const { itemId } = getItemInfoFromKey(key);
+
+
+                  const { itemId, size } = getItemInfoFromKey(key);
                   const product = getProductById(itemId);
                   const quantity = cartItems[key];
 
                   if (!product) return null;
 
+                  // Find variant for design-specific data (calculate price)
+                  const variant = size !== "N/A" && product.variants?.length
+                    ? product.variants.find((v) => v.designName === size)
+                    : null;
+
+                  // Use design-specific price if available and > 0
+                  const price = (variant?.price && variant.price > 0) ? variant.price : product.price;
+
                   return (
                     <div key={key} className="flex gap-3">
                       <div className="w-14 h-16 rounded-lg overflow-hidden bg-gray-200 shrink-0">
                         <Image
-                          src={product.images[0]}
+                          src={variant?.images?.[0] || product.images[0]}
                           alt={product.name}
                           width={56}
                           height={64}
@@ -363,10 +431,11 @@ const CheckoutPage = () => {
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {product.name}
                         </p>
+                        {size !== "N/A" && <p className="text-xs text-gray-500">Design: {size}</p>}
                         <p className="text-xs text-gray-500">Qty: {quantity}</p>
                       </div>
                       <p className="text-sm font-medium text-gray-900">
-                        {formatPKR(product.price * quantity)}
+                        {formatPKR(price * quantity)}
                       </p>
                     </div>
                   );

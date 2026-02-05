@@ -220,7 +220,9 @@ export default function AdminDashboard() {
                                         <td className="py-3 px-4 text-sm font-medium text-gray-900">
                                             {order.orderId}
                                         </td>
-                                        <td className="py-3 px-4 text-sm text-gray-700">{order.user.name}</td>
+                                        <td className="py-3 px-4 text-sm text-gray-700">
+                                            {order.user ? order.user.name : (order.guestInfo?.name || 'Guest User')}
+                                        </td>
                                         <td className="py-3 px-4 text-sm text-gray-900 font-semibold">
                                             {formatCurrency(order.totalAmount)}
                                         </td>

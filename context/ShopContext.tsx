@@ -25,6 +25,7 @@ export interface ShopContextType {
   getCartTotalAmount: () => number;
   getCartTotalItems: () => number;
   getProductQuantity: (itemId: string, size: string) => number;
+  clearCart: () => void;
 }
 
 export const ShopContext = createContext<ShopContextType | null>(null);
@@ -79,6 +80,29 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
     }
   }, [cartItems]);
 
+  // Sanitize cart: remove items that are no longer in the product list (e.g., deleted or inactive)
+  useEffect(() => {
+    if (!productsLoading && products.length > 0) {
+      setCartItems((prevCart) => {
+        const newCart = { ...prevCart };
+        let hasChanges = false;
+
+        Object.keys(newCart).forEach((key) => {
+          const parts = key.split('_');
+          const itemId = parts[0];
+          const exists = products.find((p) => p._id === itemId);
+
+          if (!exists) {
+            delete newCart[key];
+            hasChanges = true;
+          }
+        });
+
+        return hasChanges ? newCart : prevCart;
+      });
+    }
+  }, [productsLoading, products]);
+
   const getCartKey = (itemId: string, size: string): CartKey => `${itemId}_${size}`;
   // Get item info from cart key (productId_designName)
   const getItemInfoFromKey = (key: CartKey) => {
@@ -128,6 +152,11 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
     return cartItems[key] || 0;
   };
 
+  const clearCart = () => {
+    setCartItems({});
+    localStorage.removeItem("cartItems");
+  };
+
   // Calculate cart total with design-specific pricing support
   const getCartTotalAmount = () => {
     let totalAmount = 0;
@@ -139,7 +168,7 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
         let price = product.price;
         if (product.variants && product.variants.length > 0 && designName !== 'default') {
           const variant = product.variants.find((v) => v.designName === designName);
-          if (variant && variant.price !== undefined) {
+          if (variant && variant.price && variant.price > 0) {
             price = variant.price;
           }
         }
@@ -172,7 +201,8 @@ export const ShopContextProvider = (props: { children: ReactNode }) => {
     updateCartItemQuantity,
     getCartTotalAmount,
     getCartTotalItems,
-    getProductQuantity
+    getProductQuantity,
+    clearCart
   };
 
   return (

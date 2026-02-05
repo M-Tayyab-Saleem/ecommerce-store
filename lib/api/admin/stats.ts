@@ -1,6 +1,23 @@
 import { useQuery } from '@tanstack/react-query';
 import adminClient from './axios-instance';
 
+export interface RecentOrder {
+    _id: string;
+    orderId: string;
+    orderStatus: string;
+    paymentStatus: string;
+    totalAmount: number;
+    createdAt: string;
+    user?: {
+        name: string;
+        email: string;
+    };
+    guestInfo?: {
+        name: string;
+        email: string;
+    };
+}
+
 interface DashboardStats {
     overview: {
         totalUsers: number;
@@ -21,18 +38,7 @@ interface DashboardStats {
         orders: number;
         revenue: number;
     };
-    recentOrders: Array<{
-        _id: string;
-        orderId: string;
-        orderStatus: string;
-        paymentStatus: string;
-        totalAmount: number;
-        createdAt: string;
-        user: {
-            name: string;
-            email: string;
-        };
-    }>;
+    recentOrders: Array<RecentOrder>;
     orderStatusBreakdown: Record<string, number>;
     paymentMethodBreakdown: Record<string, number>;
     lowStockProductsList: Array<{

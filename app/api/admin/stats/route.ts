@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
             .populate('user', 'name email')
             .sort({ createdAt: -1 })
             .limit(5)
-            .select('orderId orderStatus paymentStatus totalAmount createdAt');
+            .select('orderId orderStatus paymentStatus totalAmount createdAt guestInfo');
 
         // Order status breakdown
         const orderStatusBreakdown = await Order.aggregate([

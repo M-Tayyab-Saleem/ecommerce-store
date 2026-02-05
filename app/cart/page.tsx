@@ -132,8 +132,8 @@ const Cart = () => {
                                     ? product.variants.find((v) => v.designName === designName)
                                     : null;
 
-                                // Use design-specific price if available
-                                const price = variant?.price ?? product.price;
+                                // Use design-specific price if available and > 0
+                                const price = (variant?.price && variant.price > 0) ? variant.price : product.price;
                                 const itemTotal = price * quantity;
 
                                 // Use design-specific image if available

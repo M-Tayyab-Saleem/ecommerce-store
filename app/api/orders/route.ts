@@ -4,7 +4,7 @@ import dbConnect from '@/lib/dbConnect';
 import Order from '@/models/Order';
 import Product, { IVariant } from '@/models/Product';
 import Payment from '@/models/Payment';
-import { requireAuth, requireAdmin } from '@/lib/authMiddleware';
+import { requireAdmin, verifyAuth } from '@/lib/authMiddleware';
 import { generateOrderId } from '@/utils/generateOrderId';
 import {
     successResponse,
@@ -48,6 +48,7 @@ const createOrderSchema = z.object({
         .string()
         .max(500, 'Notes cannot exceed 500 characters')
         .optional(),
+    email: z.string().email('Invalid email address').optional(),
 });
 
 // GET /api/orders - Admin: Get all orders
@@ -118,11 +119,8 @@ export async function GET(request: NextRequest) {
 // POST /api/orders - Create order
 export async function POST(request: NextRequest) {
     try {
-        // Require authentication
-        const authResult = await requireAuth(request);
-        if (!authResult.success) {
-            return unauthorizedResponse(authResult.error);
-        }
+        // Optional authentication (don't block if not logged in)
+        const authResult = await verifyAuth(request);
 
         await dbConnect();
 
@@ -139,20 +137,54 @@ export async function POST(request: NextRequest) {
             return validationErrorResponse(errors);
         }
 
-        const { items, shippingAddress, paymentMethod, notes } =
+        const { items, shippingAddress, paymentMethod, notes, email } =
             validationResult.data;
+
+        // Ensure we have contact info (User OR Guest)
+        let userId: string | undefined;
+        let guestInfo: {
+            name: string;
+            email: string;
+            phone: string;
+            address: string;
+            city: string;
+        } | undefined;
+
+        if (authResult.success && authResult.user) {
+            userId = authResult.user._id;
+        } else {
+            // Guest Checkout Logic
+            if (!email) {
+                return errorResponse('Email is required for guest checkout', 400);
+            }
+            guestInfo = {
+                name: shippingAddress.name,
+                email: email,
+                phone: shippingAddress.phone,
+                address: shippingAddress.address,
+                city: shippingAddress.city,
+            };
+        }
 
         // Fetch products and calculate total
         const productIds = items.map((item) => item.product);
+        const uniqueProductIds = [...new Set(productIds)];
+        console.log('Order Items Requested:', JSON.stringify(items, null, 2));
+
         const products = await Product.find({
-            _id: { $in: productIds },
+            _id: { $in: uniqueProductIds },
             isActive: true,
             isDeleted: false,
         });
+        console.log('Products Found:', products.length, 'IDs:', products.map(p => p._id));
 
-        if (products.length !== items.length) {
+        if (products.length !== uniqueProductIds.length) {
+            const foundIds = products.map((p) => p._id.toString());
+            const missingIds = uniqueProductIds.filter((id) => !foundIds.includes(id));
+            console.error('Missing Products:', missingIds);
+
             return errorResponse(
-                'Some products are not available',
+                `Some products are not available: ${missingIds.join(', ')}`,
                 400
             );
         }
@@ -171,7 +203,10 @@ export async function POST(request: NextRequest) {
             }
 
             // Check stock
-            if (item.selectedVariant) {
+            // specific check: treat 'default' as no variant (base product)
+            const isVariantRequest = item.selectedVariant && item.selectedVariant !== 'default';
+
+            if (isVariantRequest) {
                 const variant = product.variants.find(
                     (v: IVariant) => v.designName === item.selectedVariant
                 ) as IVariant | undefined;
@@ -211,9 +246,9 @@ export async function POST(request: NextRequest) {
         const orderId = generateOrderId();
 
         // Create order
-        const order = await Order.create({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const orderData: any = {
             orderId,
-            user: authResult.user!._id,
             items: orderItems,
             shippingAddress,
             paymentMethod,
@@ -223,7 +258,15 @@ export async function POST(request: NextRequest) {
             shippingFee,
             notes,
             handmadeDisclaimer: true,
-        });
+        };
+
+        if (userId) {
+            orderData.user = userId;
+        } else {
+            orderData.guestInfo = guestInfo;
+        }
+
+        const order = await Order.create(orderData);
 
         // Reduce stock for each product
         for (const item of items) {
@@ -258,7 +301,9 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        await order.populate('user', 'name email phone');
+        if (userId) {
+            await order.populate('user', 'name email phone');
+        }
         await order.populate('items.product', 'name images');
 
         return successResponse('Order placed successfully', order, 201);
