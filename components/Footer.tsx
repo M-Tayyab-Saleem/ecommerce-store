@@ -39,7 +39,7 @@ const Footer = () => {
     },
     {
       name: "WhatsApp",
-      href: "https://wa.me/923001234567",
+      href: "https://wa.me/923022828770",
       icon: MessageCircle,
     },
   ];

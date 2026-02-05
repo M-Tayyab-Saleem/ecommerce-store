@@ -157,19 +157,19 @@ const TermsConditionsPage = () => {
                                 <ul className="list-disc pl-6 text-gray-600 space-y-2 mt-3">
                                     <li>
                                         Email:{" "}
-                                        <a href="mailto:hello@epoxysista.com" className="text-primary hover:underline">
-                                            hello@epoxysista.com
+                                        <a href="mailto:epoxysista@gmail.com" className="text-primary hover:underline">
+                                            epoxysista@gmail.com
                                         </a>
                                     </li>
                                     <li>
                                         WhatsApp:{" "}
                                         <a
-                                            href="https://wa.me/923001234567"
+                                            href="https://wa.me/923022828770"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-primary hover:underline"
                                         >
-                                            +92 300 1234567
+                                            +92 302 2828770
                                         </a>
                                     </li>
                                 </ul>

@@ -423,7 +423,7 @@ const CheckoutPage = () => {
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <p className="text-sm text-gray-600 mb-2">Need help ordering?</p>
                 <a
-                  href="https://wa.me/923001234567?text=Hi! I need help placing an order."
+                  href="https://wa.me/923022828770?text=Hi! I need help placing an order."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm text-[#25D366] font-medium hover:underline"

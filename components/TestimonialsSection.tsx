@@ -101,7 +101,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                     <p className="text-sm text-gray-500">
                         Want to share your experience?{" "}
                         <a
-                            href="https://wa.me/923001234567?text=Hi! I'd like to share my review."
+                            href="https://wa.me/923022828770?text=Hi! I'd like to share my review."
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary hover:underline"

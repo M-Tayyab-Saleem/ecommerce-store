@@ -72,7 +72,7 @@ const CustomizationHighlight: React.FC = () => {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
-                            href="https://wa.me/923001234567?text=Hi! I'd like to order a custom resin piece."
+                            href="https://wa.me/923022828770?text=Hi! I'd like to order a custom resin piece."
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn-whatsapp justify-center"

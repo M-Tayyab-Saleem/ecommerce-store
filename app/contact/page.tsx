@@ -212,10 +212,10 @@ const Contact = () => {
                   <div>
                     <h4 className="font-medium text-gray-900">Phone</h4>
                     <a
-                      href="tel:+923001234567"
+                      href="tel:+923022828770"
                       className="text-gray-600 hover:text-primary transition-colors"
                     >
-                      +92 300 1234567
+                      +92 3022828770
                     </a>
                   </div>
                 </div>
@@ -227,10 +227,10 @@ const Contact = () => {
                   <div>
                     <h4 className="font-medium text-gray-900">Email</h4>
                     <a
-                      href="mailto:hello@epoxysista.com"
+                      href="mailto:epoxysista@gmail.com"
                       className="text-gray-600 hover:text-primary transition-colors"
                     >
-                      hello@epoxysista.com
+                      epoxysista@gmail.com
                     </a>
                   </div>
                 </div>
@@ -241,7 +241,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">Location</h4>
-                    <p className="text-gray-600">Lahore, Pakistan</p>
+                    <p className="text-gray-600">Karachi, Pakistan</p>
                   </div>
                 </div>
 

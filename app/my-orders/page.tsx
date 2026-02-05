@@ -213,7 +213,7 @@ const MyOrdersPage = () => {
                     Contact us on WhatsApp for any order-related queries
                 </p>
                 <a
-                    href="https://wa.me/923001234567?text=Hi! I need help with my order."
+                    href="https://wa.me/923022828770?text=Hi! I need help with my order."
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-whatsapp inline-flex"
