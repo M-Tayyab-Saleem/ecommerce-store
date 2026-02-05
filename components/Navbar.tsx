@@ -82,12 +82,12 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-white/95 backdrop-blur-sm py-4"
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-white/95 backdrop-blur-sm py-2"
         }`}
     >
       <div className="container-custom flex items-center justify-between">
-        <Link href="/" className="relative block w-32 md:w-40">
-          <Image src="/images/logo.png" alt="EpoxySista" width={160} height={50} className="w-full h-auto object-contain" priority />
+        <Link href="/" className="relative block h-20 md:h-28 w-auto -my-3 md:-my-5">
+          <Image src="/images/logo.png" alt="EpoxySista" width={160} height={50} className="h-full w-auto object-contain" priority />
         </Link>
 
         {/* Desktop Navigation */}
