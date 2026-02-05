@@ -304,7 +304,7 @@ const ProductsContent = () => {
                 {/* Main Content */}
                 <main className="flex-1">
                     {/* Toolbar */}
-                    <div className="flex items-center justify-between mb-6 pb-4 border-b">
+                    <div className="flex items-center justify-end mb-6 pb-4">
                         {/* Mobile Filter Button */}
                         <button
                             onClick={() => setShowMobileFilters(true)}
@@ -320,11 +320,6 @@ const ProductsContent = () => {
                                 </span>
                             )}
                         </button>
-
-                        {/* Results Count */}
-                        <p className="text-sm text-gray-600">
-                            {total} products found
-                        </p>
 
                         {/* Sort Dropdown */}
                         <div className="relative">
