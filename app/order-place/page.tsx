@@ -19,22 +19,22 @@ const getItemInfoFromKey = (key: CartKey) => {
 const PAYMENT_ACCOUNTS = {
   EASYPAISA: {
     title: "EasyPaisa",
-    accountName: "Store Owner Name",
-    accountNumber: "0300-1234567",
+    accountName: "Parveen Akhtar",
+    accountNumber: "03491852856",
     instruction: "Please send the exact amount and upload the screenshot below.",
   },
   JAZZCASH: {
     title: "JazzCash",
-    accountName: "Store Owner Name",
-    accountNumber: "0300-1234567",
+    accountName: "Maryam Saleem",
+    accountNumber: "03268036375",
     instruction: "Please send the exact amount and upload the screenshot below.",
   },
   BANK_TRANSFER: {
     title: "Bank Transfer",
-    bankName: "Meezan Bank",
-    accountTitle: "Store Owner Name",
-    accountNumber: "1234567890",
-    iban: "PK00MEZN0000001234567890",
+    bankName: "Bank Al Habib",
+    accountTitle: "Muhammad Tayyab Saleem",
+    accountNumber: "-",
+    iban: "PK04BAHL1201098100698101",
     instruction: "Please use your Order ID as reference.",
   },
 };
