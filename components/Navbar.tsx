@@ -81,153 +81,156 @@ const Navbar = () => {
   };
 
   return (
-    <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-white/95 backdrop-blur-sm py-2"
-        }`}
-    >
-      <div className="container-custom flex items-center justify-between">
-        <Link href="/" className="relative block h-18 md:h-24 w-auto -my-3 md:-my-5">
-          <Image src="/images/logo.png" alt="EpoxySista" width={160} height={50} className="h-full w-auto object-contain" priority />
-        </Link>
-
-        {/* Desktop Navigation */}
-        <ul className="hidden lg:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <li
-              key={link.name}
-              className="relative group"
-            >
-              {link.dropdown ? (
-                <div ref={dropdownRef}>
-                  <button
-                    className={`flex items-center gap-1 py-2 font-medium transition-colors hover:text-primary ${pathname.startsWith("/products?category")
-                      ? "text-primary"
-                      : "text-gray-700"
-                      }`}
-                    onClick={() => toggleDropdown(link.name)}
-                    onMouseEnter={() => setActiveDropdown(link.name)}
-                  >
-                    {link.name}
-                    <ChevronDown
-                      size={16}
-                      className={`transition-transform ${activeDropdown === link.name ? "rotate-180" : ""
-                        }`}
-                    />
-                  </button>
-                  {/* Dropdown Menu */}
-                  <div
-                    className={`absolute top-full left-0 pt-2 transition-all duration-200 ${activeDropdown === link.name
-                      ? "opacity-100 visible translate-y-0"
-                      : "opacity-0 invisible -translate-y-2"
-                      }`}
-                    onMouseLeave={() => setActiveDropdown(null)}
-                  >
-                    <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2 min-w-[180px]">
-                      {link.dropdown.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
-                        >
-                          {item.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <Link
-                  href={link.href}
-                  className={`py-2 font-medium transition-colors hover:text-primary relative ${pathname === link.href ? "text-primary" : "text-gray-700"
-                    }`}
-                >
-                  {link.name}
-                  {pathname === link.href && (
-                    <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
-                  )}
-                </Link>
-              )}
-            </li>
-          ))}
-        </ul>
-
-        {/* Icons */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setShowSearch(!showSearch)}
-            className="p-2 text-gray-700 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
-            aria-label="Search"
-          >
-            <Search size={20} />
-          </button>
-
-          {/* User Dropdown */}
-          <div className="relative group">
-            <button
-              className="p-2 text-gray-700 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
-              aria-label="Account"
-            >
-              <User size={20} />
-            </button>
-            <div className="absolute top-full right-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-              <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2 min-w-[160px]">
-                {user?.role === 'admin' && (
-                  <Link
-                    href="/admin"
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
-                  >
-                    Admin Dashboard
-                  </Link>
-                )}
-                <Link
-                  href="/my-orders"
-                  className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
-                >
-                  My Orders
-                </Link>
-                {user ? (
-                  <button
-                    onClick={logout}
-                    className="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
-                  >
-                    Logout
-                  </button>
-                ) : (
-                  <Link
-                    href="/login"
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
-                  >
-                    Login / Register
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Cart */}
-          <Link
-            href="/cart"
-            className="relative p-2 text-gray-700 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
-            aria-label="Shopping Cart"
-          >
-            <ShoppingBag size={20} />
-            {getCartTotalItems() > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-5 h-5 flex items-center justify-center bg-primary text-white rounded-full text-[10px] font-bold">
-                {getCartTotalItems()}
-              </span>
-            )}
+    <>
+      <nav
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-white/95 backdrop-blur-sm py-2"
+          }`}
+      >
+        <div className="container-custom flex items-center justify-between">
+          <Link href="/" className="relative block h-18 md:h-24 w-auto -my-3 md:-my-5">
+            <Image src="/images/logo.png" alt="EpoxySista" width={160} height={50} className="h-full w-auto object-contain" priority />
           </Link>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="lg:hidden p-2 text-gray-700 hover:text-primary transition-colors"
-            aria-label="Open menu"
-          >
-            <Menu size={24} />
-          </button>
+          {/* Desktop Navigation */}
+          <ul className="hidden lg:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <li
+                key={link.name}
+                className="relative group"
+              >
+                {link.dropdown ? (
+                  <div ref={dropdownRef}>
+                    <button
+                      className={`flex items-center gap-1 py-2 font-medium transition-colors hover:text-primary ${pathname.startsWith("/products?category")
+                        ? "text-primary"
+                        : "text-gray-700"
+                        }`}
+                      onClick={() => toggleDropdown(link.name)}
+                      onMouseEnter={() => setActiveDropdown(link.name)}
+                    >
+                      {link.name}
+                      <ChevronDown
+                        size={16}
+                        className={`transition-transform ${activeDropdown === link.name ? "rotate-180" : ""
+                          }`}
+                      />
+                    </button>
+                    {/* Dropdown Menu */}
+                    <div
+                      className={`absolute top-full left-0 pt-2 transition-all duration-200 ${activeDropdown === link.name
+                        ? "opacity-100 visible translate-y-0"
+                        : "opacity-0 invisible -translate-y-2"
+                        }`}
+                      onMouseLeave={() => setActiveDropdown(null)}
+                    >
+                      <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2 min-w-[180px]">
+                        {link.dropdown.map((item) => (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    href={link.href}
+                    className={`py-2 font-medium transition-colors hover:text-primary relative ${pathname === link.href ? "text-primary" : "text-gray-700"
+                      }`}
+                  >
+                    {link.name}
+                    {pathname === link.href && (
+                      <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                    )}
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ul>
+
+          {/* Icons */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowSearch(!showSearch)}
+              className="p-2 text-gray-700 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
+              aria-label="Search"
+            >
+              <Search size={20} />
+            </button>
+
+            {/* User Dropdown */}
+            <div className="relative group">
+              <button
+                className="p-2 text-gray-700 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
+                aria-label="Account"
+              >
+                <User size={20} />
+              </button>
+              <div className="absolute top-full right-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2 min-w-[160px]">
+                  {user?.role === 'admin' && (
+                    <Link
+                      href="/admin"
+                      className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <Link
+                    href="/my-orders"
+                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                  >
+                    My Orders
+                  </Link>
+                  {user ? (
+                    <button
+                      onClick={logout}
+                      className="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                    >
+                      Logout
+                    </button>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                    >
+                      Login / Register
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Cart */}
+            <Link
+              href="/cart"
+              className="relative p-2 text-gray-700 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
+              aria-label="Shopping Cart"
+            >
+              <ShoppingBag size={20} />
+              {getCartTotalItems() > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 flex items-center justify-center bg-primary text-white rounded-full text-[10px] font-bold">
+                  {getCartTotalItems()}
+                </span>
+              )}
+            </Link>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden p-2 text-gray-700 hover:text-primary transition-colors"
+              aria-label="Open menu"
+            >
+              <Menu size={24} />
+            </button>
+          </div>
         </div>
-      </div>
+
+      </nav>
 
       {/* Mobile Menu Overlay */}
       <div
@@ -336,7 +339,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 };
 
