@@ -15,6 +15,8 @@ import { IProduct } from "@/types/product";
 // Product service for direct DB access
 import { getProducts } from "@/lib/services/product-service";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   // Fetch data directly from the database (Server Component)
   // This avoids "fetch failed" errors when deploying to Vercel (localhost issue)

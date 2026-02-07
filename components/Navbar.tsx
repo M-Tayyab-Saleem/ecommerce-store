@@ -306,15 +306,24 @@ const Navbar = () => {
           {/* Footer */}
           <div className="p-4 border-t">
             {user ? (
-              <button
-                onClick={() => {
-                  logout();
-                  setMobileMenuOpen(false);
-                }}
-                className="btn-primary w-full text-center flex justify-center items-center gap-2"
-              >
-                <LogOut size={18} /> Logout
-              </button>
+              <>
+                <Link
+                  href="/my-orders"
+                  className="btn-outline w-full text-center flex justify-center items-center gap-2 mb-3"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <ShoppingBag size={18} /> My Orders
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="btn-primary w-full text-center flex justify-center items-center gap-2"
+                >
+                  <LogOut size={18} /> Logout
+                </button>
+              </>
             ) : (
               <Link
                 href="/login"

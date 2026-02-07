@@ -113,8 +113,8 @@ export default function OrdersPage() {
             render: (order: IOrder) => (
                 <div className="flex flex-col gap-1">
                     <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded ${order.paymentMethod === "COD"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-gray-100 text-gray-700"
+                        ? "bg-blue-100 text-blue-700"
+                        : "bg-gray-100 text-gray-700"
                         }`}>
                         {order.paymentMethod}
                     </span>
