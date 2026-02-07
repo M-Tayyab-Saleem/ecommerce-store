@@ -28,7 +28,7 @@ const slides: Slide[] = [
       "Personalize your pieces with names, colors, and designs. Made just for you.",
   },
   {
-    image: "/images/hero-3.png",
+    image: "/images/hero-3.jpeg",
     title: "Beautiful",
     subtitle: "Home Décor",
     description:

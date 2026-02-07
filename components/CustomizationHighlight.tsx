@@ -8,17 +8,17 @@ const CustomizationHighlight: React.FC = () => {
         {
             title: "Name Keychains",
             description: "Personalize with any name or word",
-            image: "/images/custom-keychain.jpg",
+            image: "/images/custom-keychain.png",
         },
         {
             title: "Custom Colors",
             description: "Choose your favorite color combinations",
-            image: "/images/custom-colors.jpg",
+            image: "/images/custom-colors.png",
         },
         {
             title: "Special Designs",
             description: "Bring your ideas to life",
-            image: "/images/custom-design.jpg",
+            image: "/images/custom-design.png",
         },
     ];
 

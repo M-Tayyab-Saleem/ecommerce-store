@@ -31,7 +31,7 @@ const defaultCategories: Category[] = [
     },
     {
         name: "Home Décor",
-        image: "/images/category-decor.png",
+        image: "/images/category-decor.jpeg",
         href: "/products?category=home-decor",
         productCount: 12,
     },
